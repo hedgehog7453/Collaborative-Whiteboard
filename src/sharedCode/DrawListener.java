@@ -29,6 +29,7 @@ public class DrawListener extends Component
     private int stroke = 1;
     private int fontSize = 12;
     private Shape shape;
+    private String defaultPath = "/Users/jiayuli/Desktop/";
 
 
     public DrawListener(ServerRemoteInterface server) {
@@ -55,32 +56,48 @@ public class DrawListener extends Component
 
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
-//        switch (cmd) {
-//            case "New":
+        switch (cmd) {
+            case "New":
 //                System.out.println("click save as");
-//                break;
-//            case "Open":
-//                try {
-//                    openFile();
-//                } catch (IOException ex) {
-//                    ex.printStackTrace();
-//                }
-//                System.out.println("click open");
-//                break;
-//            case "Save":
+                int value=JOptionPane.showConfirmDialog(null, "save current work？", "Warning", 0);
+                if(value==0){
+                    try{
+                        saveFile("");
+                    } catch (IOException e1){
+                        System.out.println("failed to save");
+                    }
+                } else {
+                    canvas.repaint(); // clear canvas
+                }
+
+                break;
+            case "Open":
+                try {
+                    openFile();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                System.out.println("click open");
+                break;
+            case "Save":
 //                System.out.println("click save");
-//                break;
-//            case "Save as":
-//                try {
-//                    saveFile();
-//                } catch (IOException ex) {
-//                    ex.printStackTrace();
-//                }
+                try {
+                    saveFile(defaultPath);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "Save as":
+                try {
+                    saveFile("");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
 //                System.out.println("click save as");
-//                break;
-//            default:
-//                System.out.println(cmd + " clicked");
-//        }
+                break;
+            default:
+                System.out.println(cmd + " clicked");
+        }
     }
 
     public void toolBtnClicked(String text) {
@@ -203,69 +220,85 @@ public class DrawListener extends Component
     public void mouseExited(MouseEvent e) {
     }
 
-//    public void openFile() throws IOException {
-//        int value=JOptionPane.showConfirmDialog(null, "save current work？", "Warning", 0);
-//        if(value==0){
-//            saveFile();
-//        }
-//        if(value==1){
-//            shapearray.removeAll(shapearray); // clear shapearray
-//            canvas.repaint(); // clear canvas
-//            try {
-//                // alert user to choose file
-//                JFileChooser chooser = new JFileChooser();
-//                chooser.showOpenDialog(null);
-//                File file =chooser.getSelectedFile();
-//                //如果为选中文件
-//                if(file==null){
-//                    JOptionPane.showMessageDialog(null, "Didn't select file");
-//                }
-//                else {
-//                    // create output stream
-//                    FileInputStream fis = new FileInputStream(file);
-//                    ObjectInputStream ois = new ObjectInputStream(fis);
-//                    // cast to shape type
-//                    ArrayList<Shape> list =(ArrayList<Shape>)ois.readObject();
-//                    // re-paint canvas
-//                    for (int i = 0; i <list.size(); i++) {
-//                        System.out.println(shapearray.size());
-//                        Shape shape= list.get(i);
-//                        shapearray.add(shape);
-//                        canvas.repaint();
-//                    }
-//                    ois.close();
-//                }
-//            } catch (Exception e1) {
-//                e1.printStackTrace();
-//            }
-//        }
-//    }
-//
-//    public void saveFile() throws IOException {
-//        JFileChooser fileChooser = new JFileChooser();
-//        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-//        int result = fileChooser.showSaveDialog(this);
-//        if (result == JFileChooser.CANCEL_OPTION) {
-//            return;
-//        }
-//        File fileName = fileChooser.getSelectedFile();
-//        if (fileName.getName().equals("")) {
-//            JOptionPane.showMessageDialog(fileChooser, "Invalid File Name",
-//                    "Invalid File Name", JOptionPane.ERROR_MESSAGE);
-//        } else {
-//            fileName.delete();
-//            try {
-//
-//                FileOutputStream fis = new FileOutputStream(fileName);
-//                ObjectOutputStream oos = new ObjectOutputStream(fis);
-//                // re-paint shapearray to canvas
-//                oos.writeObject(shapearray);
-//                JOptionPane.showMessageDialog(null, "Success！");
-//                oos.close();
-//            } catch (Exception e){
-//            }
-//        }
-//    }
+    public void openFile() throws IOException {
+        int value=JOptionPane.showConfirmDialog(null, "save current work？", "Warning", 0);
+        if(value==0){
+            saveFile("");
+        }
+        if(value==1){
+            canvas.repaint(); // clear canvas
+            try {
+                // alert user to choose file
+                JFileChooser chooser = new JFileChooser();
+                chooser.showOpenDialog(null);
+                File file =chooser.getSelectedFile();
+                if(file==null){
+                    JOptionPane.showMessageDialog(null, "Didn't select file");
+                }
+                else {
+                    // create output stream
+                    FileInputStream fis = new FileInputStream(file);
+                    ObjectInputStream ois = new ObjectInputStream(fis);
+                    // cast to shape type
+                    ArrayList<Shape> list =(ArrayList<Shape>)ois.readObject();
+                    // re-paint canvas
+                    paint(g, list);
+                    ois.close();
+                }
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    public void saveFile(String path) throws IOException {
+        if (path.equals("")){
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int result = fileChooser.showSaveDialog(this);
+        if (result == JFileChooser.CANCEL_OPTION) {
+            return;
+        }
+        File fileName = fileChooser.getSelectedFile();
+        if (fileName.getName().equals("")) {
+            JOptionPane.showMessageDialog(fileChooser, "Invalid File Name",
+                    "Invalid File Name", JOptionPane.ERROR_MESSAGE);
+        } else {
+            fileName.delete();
+            try {
+                FileOutputStream fis = new FileOutputStream(fileName);
+                ObjectOutputStream oos = new ObjectOutputStream(fis);
+                // re-paint shapearray to canvas
+                oos.writeObject(server.getWhiteBoard());
+                JOptionPane.showMessageDialog(null, "Success！");
+                oos.close();
+            } catch (Exception e){
+            }
+        }
+    } else {
+            try {
+                FileOutputStream fis = new FileOutputStream(defaultPath);
+                ObjectOutputStream oos = new ObjectOutputStream(fis);
+                // re-paint shapearray to canvas
+                oos.writeObject(server.getWhiteBoard());
+                JOptionPane.showMessageDialog(null, "Success！");
+                oos.close();
+            } catch (Exception e){
+            }
+        }
+    }
+
+    // 重写panel的paint方法，让repaint能够调用
+    public void paint(Graphics g, ArrayList<Shape> array) {
+        super.paint(g);
+                for (Shape a: array) {
+                    if(a != null) {
+                        a.drawshape((Graphics2D) g);
+                    } else {
+                        break;
+                    }
+                }
+    }
 
     public JPanel getCanvas() {
         return canvas;

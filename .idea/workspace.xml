@@ -2,17 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2cc4096d-ce47-42ff-a7ec-f06b95a9ad0a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/gui/WhiteboardWindow.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/sharedCode/DrawListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/sharedCode/Shape.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Manager/ManagerWhiteboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/manager/ManagerWhiteboard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server/ServerRemoteImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/ServerRemoteImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server/ServerRemoteInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/ServerRemoteInterface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SharedCode/ClientRemoteImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/ClientRemoteImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SharedCode/ClientRemoteInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/ClientRemoteInterface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SharedCode/Whiteboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/Whiteboard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/User/UserWhiteboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/user/UserWhiteboard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sharedCode/DrawListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/DrawListener.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -54,7 +45,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.User">
+  <component name="RunManager" selected="Application.Manager">
     <configuration name="Manager" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="manager.ManagerWhiteboard" />
       <module name="NewWhiteboard" />
