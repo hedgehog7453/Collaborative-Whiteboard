@@ -71,8 +71,12 @@ public class Whiteboard {
                 JFrame frame = new JFrame("Connection");
                 username = JOptionPane.showInputDialog(frame, "Please enter your username: ",
                         opTitle, JOptionPane.QUESTION_MESSAGE);
-                if (username.equals("")) {
-                    JOptionPane.showConfirmDialog(null, "Please enter a username ", "", JOptionPane.DEFAULT_OPTION);
+                if (username == null) {
+                    System.out.println("Bye");
+                    System.exit(0);
+                }
+                if (username.length() < 4) {
+                    JOptionPane.showConfirmDialog(null, "Please enter a valid username. Your username needs to be longer than 4 letters.", "", JOptionPane.DEFAULT_OPTION);
                     continue;
                 }
                 isUnique = server.isUsernameUnique(username);

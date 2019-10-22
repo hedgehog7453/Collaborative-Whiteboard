@@ -28,14 +28,18 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     @Override
     public boolean clientConnect(boolean isManager, String username, ClientRemoteInterface client) throws RemoteException {
         if (isManager) {
-            System.out.println("manager " + username + " joined");
             manager = client;
             managerName = username;
+            System.out.println("manager " + username + " joined");
             return true;
         } else {
-            System.out.println("user " + username + " joined");
             users.put(username, client);
-            return manager.getApproval(username);
+            boolean managerApproved = manager.getApproval(username);
+            if (managerApproved) {
+                System.out.println("user " + username + " joined");
+                return true;
+            }
+            return false;
         }
     }
 
