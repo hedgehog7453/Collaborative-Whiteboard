@@ -4,6 +4,8 @@ import server.ServerRemoteInterface;
 
 import javax.print.DocFlavor;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -30,6 +32,9 @@ public class DrawListener extends Component
     private int fontSize = 12;
     private Shape shape;
     private String defaultPath = "/Users/jiayuli/Desktop/";
+    private JTextArea chatInput;
+    private JTextPane chatOutput;
+    private JScrollPane userTab;
 
 
     public DrawListener(ServerRemoteInterface server) {
@@ -95,6 +100,13 @@ public class DrawListener extends Component
                 }
 //                System.out.println("click save as");
                 break;
+            case "Post":
+                try{
+                    server.sendMessage(this.chatInput.getText());
+                } catch (RemoteException e3){
+                    System.out.println("failed to send message");
+                }
+//                System.out.println(this.chatInput.getText());
             default:
                 System.out.println(cmd + " clicked");
         }
@@ -300,17 +312,83 @@ public class DrawListener extends Component
                 }
     }
 
-    public JPanel getCanvas() {
-        return canvas;
-    }
+//    public JPanel getCanvas() {
+//        return canvas;
+//    }
 
     /**
      * Set the canvas to draw on
      */
     public void setCanvas(JPanel canvas) {
         this.canvas = canvas;
-        System.out.println(canvas.getGraphics());
+//        System.out.println(canvas.getGraphics());
         setG(canvas.getGraphics());
+    }
+
+    public void setChatPanel(JTextArea input, JTextPane output){
+        this.chatInput = input;
+        this.chatOutput = output;
+        System.out.println("set chat panel");
+    }
+
+    public void broadcastMes(String msg){
+        this.chatOutput.setText(msg);
+    }
+
+    public void setUserTab(JScrollPane userTab){
+        this.userTab = userTab;
+    }
+
+    public void displayOnlineUsers(ArrayList<String> list, boolean isManager)
+    {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+
+        final int GRID_WIDTH = 4;
+        final int USERNAME_WIDTH;
+        if (isManager)
+        {
+            USERNAME_WIDTH = 3;
+        }
+        else
+        {
+            USERNAME_WIDTH = GRID_WIDTH;
+        }
+        final int KICK_BTN_WIDTH = 1;
+        final int OFFSET = 1;
+        JLabel myNameLabel = new JLabel("Your username: " + "me");
+        GridBagConstraints gbc_myNameLabel = new GridBagConstraints();
+        gbc_myNameLabel.gridx = 0;
+        gbc_myNameLabel.gridy = 0;
+        gbc_myNameLabel.gridwidth = GRID_WIDTH;
+        gbc_myNameLabel.insets = new Insets(20, 20, 20, 20);
+        panel.add(myNameLabel, gbc_myNameLabel);
+
+        int row = 0;
+        for (String username : list)
+        {
+            JLabel usernameLabel = new JLabel(username);
+            GridBagConstraints gbc_usernameLabel = new GridBagConstraints();
+            gbc_usernameLabel.gridx = 0;
+            gbc_usernameLabel.gridy = row + OFFSET;
+            gbc_usernameLabel.gridwidth = USERNAME_WIDTH;
+            gbc_usernameLabel.insets = new Insets(6, 6, 6, 6);
+            panel.add(usernameLabel, gbc_usernameLabel);
+
+            if (isManager)
+            {
+                JButton kickUserBtn = new JButton("kick");
+                GridBagConstraints gbc_kickUserBtn = new GridBagConstraints();
+                gbc_kickUserBtn.gridx = USERNAME_WIDTH;
+                gbc_kickUserBtn.gridy = row + OFFSET;
+                gbc_kickUserBtn.gridwidth = KICK_BTN_WIDTH;
+                panel.add(kickUserBtn, gbc_kickUserBtn);
+            }
+
+            // Next location
+            row++;
+        }
+        this.userTab.setViewportView(panel);
     }
 
     public void paint(Shape shape) {
@@ -369,5 +447,16 @@ public class DrawListener extends Component
         colourData.put("LIGHTGREY", Color.LIGHT_GRAY);
         colourData.put("WHITE", Color.WHITE);
     }
+
+//    @Override
+//    public void stateChanged(ChangeEvent e) {
+//
+//        System.out.println(this.userTab.getViewport().getName());
+//        try{
+//            server.getUserList();
+//        } catch (RemoteException e1){
+//            System.out.println("");
+//        }
+//    }
 }
 

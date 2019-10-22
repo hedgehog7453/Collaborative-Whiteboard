@@ -3,13 +3,33 @@
   <component name="ChangeListManager">
     <list default="true" id="2cc4096d-ce47-42ff-a7ec-f06b95a9ad0a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gui/WhiteboardWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/WhiteboardWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/ServerRemoteImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/ServerRemoteImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/ServerRemoteInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/ServerRemoteInterface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sharedCode/ClientRemoteImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/ClientRemoteImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sharedCode/ClientRemoteInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/ClientRemoteInterface.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/sharedCode/DrawListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/DrawListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sharedCode/Whiteboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/Whiteboard.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -29,9 +49,12 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
+    <property name="two.files.diff.last.used.file" value="$PROJECT_DIR$/src/user/UserWhiteboard.java" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -45,7 +68,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.Manager">
+  <component name="RunManager" selected="Application.User">
     <configuration name="Manager" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="manager.ManagerWhiteboard" />
       <module name="NewWhiteboard" />

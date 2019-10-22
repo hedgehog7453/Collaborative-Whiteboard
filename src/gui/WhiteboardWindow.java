@@ -446,24 +446,14 @@ public class WhiteboardWindow extends JFrame{
         chatPanel.add(inputScrollPane, gbc_inputScrollPane);
         // Post button
         btnPost = new JButton("Post");
-        btnPost.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String message = taInputMessage.getText();
-                // TODO: boolean sent = chatManager.sendMessage(message);
-//                if (sent) {
-//                    appendTextToMessages("[username]: " + message);
-//                } else {
-//                    appendTextToMessages("Failed to send: " + message);
-//                }
-                taInputMessage.setText("");
-            }
-        });
+        btnPost.addActionListener(dl);
+//                // TODO: boolean sent = chatManager.sendMessage(message);
         GridBagConstraints gbc_btnPost = new GridBagConstraints();
         gbc_btnPost.fill = GridBagConstraints.BOTH;
         gbc_btnPost.gridx = 1;
         gbc_btnPost.gridy = 1;
         chatPanel.add(btnPost, gbc_btnPost);
+        dl.setChatPanel(taInputMessage, tpUsersMessages);
         communicationTabbedPane.addTab("Chat", chatPanel);
 
         // View users tab
@@ -473,6 +463,9 @@ public class WhiteboardWindow extends JFrame{
         viewUsersScrollPane.setMaximumSize(new Dimension(CHAT_WIDTH, MAIN_PANEL_HEIGHT));
         // TODO: displayOnlineUsers(viewUsersScrollPane, isManager);
         communicationTabbedPane.addTab("Online users", viewUsersScrollPane);
+        viewUsersScrollPane.getViewport().setName("tab");
+        dl.setUserTab(viewUsersScrollPane);
+//        viewUsersScrollPane.getViewport().addChangeListener(dl);
         frame.getContentPane().add(communicationTabbedPane);
     }
     /**
