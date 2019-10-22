@@ -73,9 +73,9 @@ public class Whiteboard {
             }
             boolean status = server.clientConnect(isManager, username, client);
             if (status) {
-                JOptionPane.showConfirmDialog(null, "You are now in the room!");
+                JOptionPane.showConfirmDialog(null, "You are now in the room!", "Congratulations", JOptionPane.DEFAULT_OPTION);
             } else {
-                JOptionPane.showConfirmDialog(null, "You are rejected.");
+                JOptionPane.showConfirmDialog(null, "You are rejected by the manager.", "Oh no :(", JOptionPane.DEFAULT_OPTION);
             }
             //wbw = new WhiteboardWindow(isManager);
         } catch (Exception e) {
