@@ -16,9 +16,8 @@ public class ManagerWhiteboard {
         ServerRemoteImpl server;
         try {
             server = new ServerRemoteImpl();
-            // TODO
             LocateRegistry.createRegistry(8081);
-            Naming.rebind("rmi://localhost:8081/server",  server);//传入一任意一个名称，和实例化的对象
+            Naming.rebind("rmi://localhost:8081/server", server);
             //System.out.println("Object bound to name");
         } catch (MalformedURLException e) {
             e.printStackTrace();

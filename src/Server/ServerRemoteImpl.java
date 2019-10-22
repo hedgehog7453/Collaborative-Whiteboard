@@ -1,6 +1,5 @@
 package Server;
 
-import SharedCode.ClientRemoteImpl;
 import SharedCode.ClientRemoteInterface;
 
 import java.rmi.RemoteException;
@@ -17,6 +16,11 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         users = new HashMap<>();
     }
 
+
+    public boolean isUsernameUnique(String username) {
+        return !users.keySet().contains(username);
+    }
+
     @Override
     public boolean clientConnect(boolean isManager, String username, ClientRemoteInterface client) throws RemoteException {
         if (isManager) {
@@ -26,13 +30,9 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
             return true;
         } else {
             System.out.println("user " + username + " joined");
-            if (!users.keySet().contains(username)) { //unique
-                users.put(username, client);
-                return manager.getApproval(username);
-            }
+            users.put(username, client);
+            return manager.getApproval(username);
         }
-        //client.test();
-        return false;
     }
 
 }

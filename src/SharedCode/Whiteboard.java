@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 
 public class Whiteboard {
 
@@ -25,11 +26,14 @@ public class Whiteboard {
 
         // RMI
         try {
-            // Server
-            server = (ServerRemoteInterface) Naming.lookup("rmi://localhost:8081/server");
+            // find server
+            server = (ServerRemoteInterface) Naming.lookup("rmi://10.12.54.34:8081/server");
 
             // Client
             client = new ClientRemoteImpl();
+            if (!isManager) {
+                LocateRegistry.createRegistry(8081);
+            }
             Naming.rebind("rmi://localhost:8081/client", client);
         } catch (RemoteException | NotBoundException | MalformedURLException e){
             e.printStackTrace();
@@ -38,6 +42,8 @@ public class Whiteboard {
         }
 
         isConnected = connectToServer();
+
+
         if (isConnected) {
             // GUI
             try {
@@ -57,10 +63,20 @@ public class Whiteboard {
             } else {
                 opTitle = "Joining a room ...";
             }
-            JFrame frame = new JFrame("Connection");
-            String username = JOptionPane.showInputDialog(frame, "Please enter your username: ",
-                    opTitle, JOptionPane.QUESTION_MESSAGE);
+            boolean isUnique = false;
+            String username = "";
+            while (!isUnique) {
+                JFrame frame = new JFrame("Connection");
+                username = JOptionPane.showInputDialog(frame, "Please enter your username: ",
+                        opTitle, JOptionPane.QUESTION_MESSAGE);
+                isUnique = server.isUsernameUnique(username);
+            }
             boolean status = server.clientConnect(isManager, username, client);
+            if (status) {
+                JOptionPane.showConfirmDialog(null, "You are now in the room!");
+            } else {
+                JOptionPane.showConfirmDialog(null, "You are rejected.");
+            }
             //wbw = new WhiteboardWindow(isManager);
         } catch (Exception e) {
             e.printStackTrace();

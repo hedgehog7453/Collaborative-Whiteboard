@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2cc4096d-ce47-42ff-a7ec-f06b95a9ad0a" name="Default Changelist" comment="" />
+    <list default="true" id="2cc4096d-ce47-42ff-a7ec-f06b95a9ad0a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Manager/ManagerWhiteboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Manager/ManagerWhiteboard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/ServerRemoteImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerRemoteImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/ServerRemoteInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerRemoteInterface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SharedCode/Whiteboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/SharedCode/Whiteboard.java" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,11 +23,16 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/src/SharedCode/Whiteboard.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="ProjectId" id="1SXxJ6tQCcqU4stToIxF9TFuqhs" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
@@ -37,7 +49,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.User">
+  <component name="RunManager" selected="Application.Manager">
     <configuration name="Manager" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Manager.ManagerWhiteboard" />
       <module name="NewWhiteboard" />
@@ -45,7 +57,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="User" type="Application" factoryName="Application">
+    <configuration name="User" type="Application" factoryName="Application" singleton="false">
       <option name="MAIN_CLASS_NAME" value="User.UserWhiteboard" />
       <module name="NewWhiteboard" />
       <method v="2">
@@ -69,5 +81,16 @@
       <updated>1571723666753</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
