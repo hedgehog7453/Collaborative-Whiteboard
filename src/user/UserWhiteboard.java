@@ -1,6 +1,6 @@
-package User;
+package user;
 
-import SharedCode.Whiteboard;
+import sharedCode.Whiteboard;
 
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;

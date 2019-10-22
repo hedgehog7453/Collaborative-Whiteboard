@@ -1,7 +1,7 @@
-package Manager;
+package manager;
 
-import Server.ServerRemoteImpl;
-import SharedCode.Whiteboard;
+import server.ServerRemoteImpl;
+import sharedCode.Whiteboard;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;

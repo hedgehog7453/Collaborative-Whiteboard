@@ -1,6 +1,7 @@
-package SharedCode;
+package sharedCode;
 
-import Server.ServerRemoteInterface;
+import gui.WhiteboardWindow;
+import server.ServerRemoteInterface;
 
 import javax.swing.*;
 import java.net.MalformedURLException;
@@ -19,7 +20,9 @@ public class Whiteboard {
     private ClientRemoteInterface client;
 
     // GUI
-    //private WhiteboardWindow wbw;
+    private WhiteboardWindow wbw;
+
+    private DrawListener dl;
 
     public void initialiseApp(boolean isManager) {
         this.isManager = isManager;
@@ -30,7 +33,7 @@ public class Whiteboard {
             server = (ServerRemoteInterface) Naming.lookup("rmi://10.12.54.34:8081/server");
 
             // Client
-            client = new ClientRemoteImpl();
+            client = new ClientRemoteImpl(this);
             if (!isManager) {
                 LocateRegistry.createRegistry(8082);
                 Naming.rebind("rmi://localhost:8082/client", client);
@@ -44,17 +47,15 @@ public class Whiteboard {
         }
 
         isConnected = connectToServer();
-
-
         if (isConnected) {
             // GUI
             try {
-                //wbw = new WhiteboardWindow(isManager);
+                dl = new DrawListener(server);
+                wbw = new WhiteboardWindow(dl, isManager);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
     }
 
     private boolean connectToServer() {
@@ -75,7 +76,7 @@ public class Whiteboard {
                     System.out.println("Bye");
                     System.exit(0);
                 }
-                if (username.length() < 4) {
+                if (username.length() < 4) { // TODO: more validation (no space, etc.)
                     JOptionPane.showConfirmDialog(null, "Please enter a valid username. Your username needs to be longer than 4 letters.", "", JOptionPane.DEFAULT_OPTION);
                     continue;
                 }
@@ -90,12 +91,14 @@ public class Whiteboard {
             } else {
                 JOptionPane.showConfirmDialog(null, "You are rejected by the manager.", "Oh no :(", JOptionPane.DEFAULT_OPTION);
             }
-            //wbw = new WhiteboardWindow(isManager);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return true;
+    }
+
+    public DrawListener getDrawListener() {
+        return dl;
     }
 
 
