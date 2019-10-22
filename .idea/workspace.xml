@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="2cc4096d-ce47-42ff-a7ec-f06b95a9ad0a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server/ServerRemoteImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server/ServerRemoteImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/SharedCode/Whiteboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/SharedCode/Whiteboard.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -45,7 +46,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.Manager">
+  <component name="RunManager" selected="Application.User">
     <configuration name="Manager" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Manager.ManagerWhiteboard" />
       <module name="NewWhiteboard" />

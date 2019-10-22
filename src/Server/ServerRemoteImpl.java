@@ -13,11 +13,15 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     HashMap<String, ClientRemoteInterface> users;
 
     public ServerRemoteImpl() throws RemoteException {
+        managerName = "";
         users = new HashMap<>();
     }
 
 
     public boolean isUsernameUnique(String username) {
+        if (managerName.equals(username)) {
+            return false;
+        }
         return !users.keySet().contains(username);
     }
 

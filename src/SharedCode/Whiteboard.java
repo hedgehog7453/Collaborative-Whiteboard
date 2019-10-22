@@ -32,9 +32,11 @@ public class Whiteboard {
             // Client
             client = new ClientRemoteImpl();
             if (!isManager) {
-                LocateRegistry.createRegistry(8081);
+                LocateRegistry.createRegistry(8082);
+                Naming.rebind("rmi://localhost:8082/client", client);
+            } else {
+                Naming.rebind("rmi://localhost:8081/client", client);
             }
-            Naming.rebind("rmi://localhost:8081/client", client);
         } catch (RemoteException | NotBoundException | MalformedURLException e){
             e.printStackTrace();
             System.out.println("RMI connection failed.");
@@ -69,7 +71,14 @@ public class Whiteboard {
                 JFrame frame = new JFrame("Connection");
                 username = JOptionPane.showInputDialog(frame, "Please enter your username: ",
                         opTitle, JOptionPane.QUESTION_MESSAGE);
+                if (username.equals("")) {
+                    JOptionPane.showConfirmDialog(null, "Please enter a username ", "", JOptionPane.DEFAULT_OPTION);
+                    continue;
+                }
                 isUnique = server.isUsernameUnique(username);
+                if (!isUnique) {
+                    JOptionPane.showConfirmDialog(null, "Username already exists. ", "", JOptionPane.DEFAULT_OPTION);
+                }
             }
             boolean status = server.clientConnect(isManager, username, client);
             if (status) {
