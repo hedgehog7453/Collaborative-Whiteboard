@@ -6,6 +6,7 @@
       <change beforePath="$PROJECT_DIR$/src/gui/WhiteboardWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/WhiteboardWindow.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server/ServerRemoteImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/ServerRemoteImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/sharedCode/ClientRemoteImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/ClientRemoteImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sharedCode/ClientRemoteInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/ClientRemoteInterface.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/sharedCode/WhiteboardListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/WhiteboardListener.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />

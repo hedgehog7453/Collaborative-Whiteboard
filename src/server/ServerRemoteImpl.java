@@ -57,7 +57,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
                 updateAllUserlists();
                 broadcastMessage(username + " just joined the room.");
                 client.displayAllMessages();
-                client.drawAllShapes();
+//                client.drawAllShapes();
                 return true;
             }
             return false;

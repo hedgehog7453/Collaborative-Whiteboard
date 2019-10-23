@@ -32,11 +32,10 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
         wbl.displayAllMessages(allMessages);
     }
 
-    @Override
-    public void drawAllShapes() throws RemoteException {
-        ArrayList<Shape> allShapes = wbl.getAllShapes();
-        wbl.drawAllShapes(allShapes);
-    }
+//    @Override
+//    public void drawAllShapes() throws RemoteException {
+//        wbl.drawAllShapes();
+//    }
 
     @Override
     public void forceQuit(String message) throws RemoteException {

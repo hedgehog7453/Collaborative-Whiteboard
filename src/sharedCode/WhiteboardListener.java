@@ -231,17 +231,37 @@ public class WhiteboardListener extends Component
 
     // ============================ draw ==============================
 
-    public void drawAllShapes(ArrayList<Shape> allShapes) {
-        // TODO: 清空canvas然后重新画一遍所有shapes
-    }
-
-    public Graphics2D getG() {
-        return g;
-    }
-
-    public void setG(Graphics g) {
-        this.g = ((Graphics2D) g);
+    /**
+     * Set the canvas to draw on
+     */
+    public void setCanvas(JPanel canvas) {
+        this.canvas = canvas;
+        this.g = (Graphics2D) canvas.getGraphics();
         this.g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    }
+
+    public void drawAllShapes() {
+        try {
+            ArrayList<Shape> allShapes = server.getAllShapes();
+            paint(g, allShapes);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void paint(Graphics g, ArrayList<Shape> array) {
+        super.paint(g);
+        for (Shape a: array) {
+            if(a != null) {
+                a.drawshape((Graphics2D) g);
+            } else {
+                break;
+            }
+        }
+    }
+
+    public void paint(Shape shape) {
+        shape.drawshape(g);
     }
 
     public int getStroke() {
@@ -422,32 +442,6 @@ public class WhiteboardListener extends Component
 
     public void mouseExited(MouseEvent e) {
     }
-
-    // 重写panel的paint方法，让repaint能够调用
-    public void paint(Graphics g, ArrayList<Shape> array) {
-        super.paint(g);
-        for (Shape a: array) {
-            if(a != null) {
-                a.drawshape((Graphics2D) g);
-            } else {
-                break;
-            }
-        }
-    }
-
-    public void paint(Shape shape) {
-        shape.drawshape(g);
-    }
-
-    /**
-     * Set the canvas to draw on
-     */
-    public void setCanvas(JPanel canvas) {
-        this.canvas = canvas;
-//        System.out.println(canvas.getGraphics());
-        setG(canvas.getGraphics());
-    }
-
 
     // ============================ chat ==============================
 

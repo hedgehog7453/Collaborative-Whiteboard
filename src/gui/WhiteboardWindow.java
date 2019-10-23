@@ -64,6 +64,7 @@ public class WhiteboardWindow extends JFrame{
         frame.pack();
         frame.setVisible(true);
         wl.setCanvas(canvasPanel);
+        wl.drawAllShapes();
         setGuiToConnected();
     }
 
