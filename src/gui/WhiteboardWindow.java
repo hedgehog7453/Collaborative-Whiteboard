@@ -126,6 +126,8 @@ public class WhiteboardWindow extends JFrame{
                 boolean status = wl.connectToServer(false);
                 if (status) {
                     setGuiToConnected();
+                    //  connect, than repaint
+                    wl.getboardfromServer(1000);
                 }
             }
         });

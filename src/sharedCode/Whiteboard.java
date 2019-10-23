@@ -27,7 +27,6 @@ public class Whiteboard {
 
             server = (ServerRemoteInterface) Naming.lookup("rmi://localhost:8081/server");
 
-
             // Client
             client = new ClientRemoteImpl();
             if (!isManager) {
@@ -53,6 +52,9 @@ public class Whiteboard {
             // GUI
             try {
                 wbw.showWindow();
+                wl.getboardfromServer(200);
+//                client.drawAllShapes();
+//                wl.drawAllShapes(server.getWhiteBoard());
             } catch (Exception e) {
                 e.printStackTrace();
             }

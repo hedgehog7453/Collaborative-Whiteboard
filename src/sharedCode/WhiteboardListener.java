@@ -32,6 +32,7 @@ public class WhiteboardListener extends Component
     private int fontSize = 12;
     private Shape shape;
     private String path = "";
+    private boolean isDisconnect = false;
 
     private WhiteboardWindow window;
 
@@ -40,10 +41,12 @@ public class WhiteboardListener extends Component
         this.server = server;
         this.client = client;
         initToolData();
+
     }
 
     public void setWindow(WhiteboardWindow win){
         this.window = win;
+
     }
 
     public String getUsername() {
@@ -100,6 +103,7 @@ public class WhiteboardListener extends Component
             boolean status = server.clientConnect(isManager, username, client);
             if (status) {
                 JOptionPane.showConfirmDialog(null, "You are now in the room!", "Congratulations", JOptionPane.DEFAULT_OPTION);
+                this.isDisconnect = false;
             } else {
                 JOptionPane.showConfirmDialog(null, "You are rejected by the manager.", "Oh no :(", JOptionPane.DEFAULT_OPTION);
             }
@@ -143,6 +147,9 @@ public class WhiteboardListener extends Component
                 }
             } else {
                 boolean disconnect = server.clientDisconnect(getUsername());
+                if (disconnect){
+                    this.isDisconnect = true;
+                }
                 return disconnect;
             }
         } catch (Exception e) {
@@ -240,11 +247,43 @@ public class WhiteboardListener extends Component
 
     public void drawAllShapes(ArrayList<Shape> allShapes) {
         // TODO: 清空canvas然后重新画一遍所有shapes
+        if (g == null){
+            System.out.println("g doesn't exist");
+        } else {
+            paint(g, allShapes);
+        }
     }
+
+    // 重写panel的paint方法，让repaint能够调用
+    public void paint(Graphics2D g, ArrayList<Shape> array) {
+        super.paint(g);
+        for (Shape a: array) {
+            if(a != null) {
+//                System.out.println(a.);
+                a.drawshape(g);
+            } else {
+                break;
+            }
+        }
+    }
+
+    public void paint(Shape shape) {
+        shape.drawshape(g);
+    }
+
 
     public Graphics2D getG() {
         return g;
     }
+
+    /**
+     * Set the canvas to draw on
+     */
+    public void setCanvas(JPanel canvas) {
+        this.canvas = canvas;
+        setG(canvas.getGraphics());
+    }
+
 
     public void setG(Graphics g) {
         this.g = ((Graphics2D) g);
@@ -282,17 +321,6 @@ public class WhiteboardListener extends Component
                 } catch ( IOException ex) {
                     ex.printStackTrace();
                 }
-
-//                if(value==0){
-//                    try{
-//                        saveFile("");
-//                    } catch (IOException e1){
-//                        System.out.println("failed to save");
-//                    }
-//                } else {
-//                    canvas.repaint(); // clear canvas
-//                }
-
                 break;
             case "Open":
                 try {
@@ -367,6 +395,28 @@ public class WhiteboardListener extends Component
         //g.setColor(color);
     }
 
+    public void getboardfromServer(int millis){
+        try{
+            Thread thread = new MyThread();
+            Thread.currentThread().sleep(millis);//毫秒
+            thread.start();
+        } catch (InterruptedException e){
+            System.out.println("failed to get board from server");
+        }
+
+    }
+
+    class MyThread extends Thread{
+        @Override
+        public void run() {
+            try {
+                drawAllShapes(server.getWhiteBoard());
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
     /**
      * Execute this method when you have a mouse button release on the event source object
      */
@@ -376,24 +426,26 @@ public class WhiteboardListener extends Component
         y2 = e.getY();
         // Draw graphics based on coordinate values, colors, and thickness
         try {
-            switch (tool) {
-                case "LINE":
-                    shape = new Shape(tool,color,x1, y1, x2, y2, null, stroke,fontSize );
-                    server.addShape(shape);
-                    break;
-                case "CIRCLE":
-                case "OVAL":
-                case "RECTANGLE":
-                    // 如果向右拖拽
-                    if (x2 > x1) {
-                        shape = new Shape(tool,color,x1, y1, x2, y2, null, stroke, fontSize);
+            if (!isDisconnect){
+                switch (tool) {
+                    case "LINE":
+                        shape = new Shape(tool,color,x1, y1, x2, y2, null, stroke,fontSize );
                         server.addShape(shape);
-                    } else {
-                        // 如果向左拖拽
-                        shape = new Shape(tool,color,x1, y1, x2, y2, null, stroke, fontSize);
-                        server.addShape(shape);
-                    }
-                    break;
+                        break;
+                    case "CIRCLE":
+                    case "OVAL":
+                    case "RECTANGLE":
+                        // 如果向右拖拽
+                        if (x2 > x1) {
+                            shape = new Shape(tool,color,x1, y1, x2, y2, null, stroke, fontSize);
+                            server.addShape(shape);
+                        } else {
+                            // 如果向左拖拽
+                            shape = new Shape(tool,color,x1, y1, x2, y2, null, stroke, fontSize);
+                            server.addShape(shape);
+                        }
+                        break;
+                }
             }
         } catch (RemoteException e1) {
             e1.printStackTrace();
@@ -408,17 +460,20 @@ public class WhiteboardListener extends Component
         y2 = e.getY();
         g.setColor(g.getColor());
         try {
-            if (tool.equals("BRUSH")) {
-                shape = new Shape(tool,color,x1, y1, x2, y2, null, stroke, fontSize);
-                server.addShape(shape);
-                x1 = x2;
-                y1 = y2;
-            } else if (tool.equals("ERASER")) {
-                shape = new Shape(tool,canvas.getBackground(),x1, y1, x2, y2, null, stroke, fontSize);
-                server.addShape(shape);
-                x1 = x2;
-                y1 = y2;
+            if (!isDisconnect){
+                if (tool.equals("BRUSH")) {
+                    shape = new Shape(tool,color,x1, y1, x2, y2, null, stroke, fontSize);
+                    server.addShape(shape);
+                    x1 = x2;
+                    y1 = y2;
+                } else if (tool.equals("ERASER")) {
+                    shape = new Shape(tool,canvas.getBackground(),x1, y1, x2, y2, null, stroke, fontSize);
+                    server.addShape(shape);
+                    x1 = x2;
+                    y1 = y2;
+                }
             }
+
         } catch (RemoteException e1) {
             e1.printStackTrace();
         }
@@ -459,30 +514,7 @@ public class WhiteboardListener extends Component
     public void mouseExited(MouseEvent e) {
     }
 
-    // 重写panel的paint方法，让repaint能够调用
-    public void paint(Graphics g, ArrayList<Shape> array) {
-        super.paint(g);
-        for (Shape a: array) {
-            if(a != null) {
-                a.drawshape((Graphics2D) g);
-            } else {
-                break;
-            }
-        }
-    }
 
-    public void paint(Shape shape) {
-        shape.drawshape(g);
-    }
-
-    /**
-     * Set the canvas to draw on
-     */
-    public void setCanvas(JPanel canvas) {
-        this.canvas = canvas;
-//        System.out.println(canvas.getGraphics());
-        setG(canvas.getGraphics());
-    }
 
 
     // ============================ chat ==============================
@@ -516,8 +548,6 @@ public class WhiteboardListener extends Component
 
     }
 
-
-
     // Accessors
     public ArrayList<String> getAllMessages() {
         try {
@@ -536,8 +566,6 @@ public class WhiteboardListener extends Component
         }
         return null;
     }
-
-
 
 
     // Paint data

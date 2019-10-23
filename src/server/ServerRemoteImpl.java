@@ -20,7 +20,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     HashMap<String, ClientRemoteInterface> users;
     ArrayList<String> pendingUsers;
     // draw
-    ArrayList<sharedCode.Shape> shapeArrayList = new ArrayList<>();
+    ArrayList<sharedCode.Shape> shapeArrayList;
     // chat
     ArrayList<String> messages;
 
@@ -30,6 +30,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         users = new HashMap<String, ClientRemoteInterface>();
         pendingUsers = new ArrayList<String>();
         messages = new ArrayList<>();
+        shapeArrayList = new ArrayList<>();
     }
 
     // Connection & Disconnection
@@ -57,7 +58,8 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
                 updateAllUserlists();
                 broadcastMessage(username + " just joined the room.");
                 client.displayAllMessages();
-                client.drawAllShapes();
+//                client.drawAllShapes();
+//              这个时候graphic2d还没初始化 画不了
                 return true;
             }
             return false;
@@ -104,10 +106,6 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         return true;
     }
 
-
-
-
-
     @Override
     public void updateAllUserlists() throws RemoteException {
         try {
@@ -130,7 +128,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     // Draw
     @Override
     public ArrayList<Shape> getWhiteBoard() throws RemoteException {
-        //System.out.println("get");
+        System.out.println("getting whiteboard " + shapeArrayList.size());
         return shapeArrayList;
     }
 

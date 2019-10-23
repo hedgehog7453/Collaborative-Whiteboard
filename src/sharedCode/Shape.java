@@ -29,6 +29,9 @@ public class Shape implements Serializable {
         g.setStroke(new BasicStroke(this.stroke));
         g.setFont(new Font("Arial", Font.PLAIN, this.fontsize));//设置字体大小
         switch(name){
+            case "BRUSH":
+                g.drawLine(x1, y1, x2, y2);
+                break;
             case "LINE":
                 g.drawLine(x1, y1, x2, y2);
                 break;
@@ -92,9 +95,6 @@ public class Shape implements Serializable {
                         g.drawOval(x2, y1, width, height);
                     }
                 }
-                break;
-            case "BRUSH":
-                g.drawLine(x1, y1, x2, y2);
                 break;
             case "ERASER":
                 g.drawLine(x1, y1, x2, y2);
