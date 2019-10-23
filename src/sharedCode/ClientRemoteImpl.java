@@ -3,6 +3,7 @@ package sharedCode;
 import javax.swing.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Set;
 
 public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemoteInterface {
@@ -35,7 +36,7 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
     }
 
     @Override
-    public void displayUserList(String managerName, Set<String> users) throws RemoteException {
+    public void displayUserList(String managerName, ArrayList<String> users) throws RemoteException {
         System.out.println("server call back to display user list");
         thisWb.getDrawListener().updateOnlineUsers(managerName, users);
     }

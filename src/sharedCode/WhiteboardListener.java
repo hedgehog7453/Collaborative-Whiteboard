@@ -328,8 +328,12 @@ public class WhiteboardListener extends Component
         this.window.appendTextToMessages(msg);
     }
 
-    public void updateOnlineUsers(String managerName, Set<String> usernames) {
+    public void updateOnlineUsers(String managerName, ArrayList<String> usernames) {
         this.window.displayOnlineUsers(managerName, usernames);
+    }
+
+    public void kickUser(String username) {
+        
     }
 
     public void paint(Shape shape) {

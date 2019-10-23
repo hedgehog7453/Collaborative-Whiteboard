@@ -66,9 +66,9 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
             System.out.println("update user list");
             if (!users.isEmpty()) {
                 System.out.println(users.keySet());
-                manager.displayUserList(managerName, users.keySet());
+                manager.displayUserList(managerName, new ArrayList<String>(users.keySet()));
                 for (ClientRemoteInterface client : users.values()) {
-                    client.displayUserList(managerName, users.keySet());
+                    client.displayUserList(managerName, new ArrayList<String>(users.keySet()));
                 }
             } else {
                 manager.displayUserList(managerName, null);

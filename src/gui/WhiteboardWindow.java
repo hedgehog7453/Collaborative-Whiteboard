@@ -570,7 +570,7 @@ public class WhiteboardWindow extends JFrame{
         }
     }
 
-    public void displayOnlineUsers(String managerName, Set<String> userlist)
+    public void displayOnlineUsers(String managerName, ArrayList<String> userlist)
     {
         System.out.println(wl.getUsername() + " GUI display online users");
         JPanel panel = new JPanel();
@@ -627,6 +627,12 @@ public class WhiteboardWindow extends JFrame{
                 if (isManager)
                 {
                     JButton kickUserBtn = new JButton("kick");
+                    kickUserBtn.setActionCommand(username);
+                    kickUserBtn.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            wl.kickUser(e.getActionCommand());
+                        }
+                    });
                     GridBagConstraints gbc_kickUserBtn = new GridBagConstraints();
                     gbc_kickUserBtn.gridx = USERNAME_WIDTH;
                     gbc_kickUserBtn.gridy = row + OFFSET;
