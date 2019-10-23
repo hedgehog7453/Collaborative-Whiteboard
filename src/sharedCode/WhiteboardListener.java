@@ -31,7 +31,7 @@ public class WhiteboardListener extends Component
     private int stroke = 1;
     private int fontSize = 12;
     private Shape shape;
-    private String defaultPath = "/Users/jiayuli/Desktop/";
+    private String path = "";
 
     private WhiteboardWindow window;
 
@@ -162,34 +162,39 @@ public class WhiteboardListener extends Component
 
     // ============================ file ==============================
     public void openFile() throws IOException {
-        int value=JOptionPane.showConfirmDialog(null, "save current work？", "Warning", 0);
-        if(value==0){
-            saveFile("");
-        }
-        if(value==1){
-            canvas.repaint(); // clear canvas
-            try {
-                // alert user to choose file
-                JFileChooser chooser = new JFileChooser();
-                chooser.showOpenDialog(null);
-                File file =chooser.getSelectedFile();
-                if(file==null){
-                    JOptionPane.showMessageDialog(null, "Didn't select file");
-                }
-                else {
-                    // create output stream
-                    FileInputStream fis = new FileInputStream(file);
-                    ObjectInputStream ois = new ObjectInputStream(fis);
-                    // cast to shape type
-                    ArrayList<Shape> list =(ArrayList<Shape>)ois.readObject();
-                    // re-paint canvas
-                    paint(g, list);
-                    ois.close();
-                }
-            } catch (Exception e1) {
-                e1.printStackTrace();
+//        int value=JOptionPane.showConfirmDialog(null, "save current work？", "Warning", 0);
+//        if(value==0){
+//            saveFile("");
+//        }
+//        if(value==1){
+        canvas.repaint(); // clear canvas
+        try {
+            // alert user to choose file
+            JFileChooser chooser = new JFileChooser();
+            int result = chooser.showOpenDialog(null);
+            if (result == JFileChooser.CANCEL_OPTION) {
+                return;
             }
+            File file =chooser.getSelectedFile();
+            if(file==null){
+                JOptionPane.showMessageDialog(null, "Didn't select file");
+                path = "";
+            }
+            else {
+                // create output stream
+                FileInputStream fis = new FileInputStream(file);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                // cast to shape type
+                ArrayList<Shape> list =(ArrayList<Shape>)ois.readObject();
+                // re-paint canvas
+                paint(g, list);
+                ois.close();
+                path = file.getPath();
+            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
         }
+//         }
     }
 
     public void saveFile(String path) throws IOException {
@@ -205,7 +210,6 @@ public class WhiteboardListener extends Component
                 JOptionPane.showMessageDialog(fileChooser, "Invalid File Name",
                         "Invalid File Name", JOptionPane.ERROR_MESSAGE);
             } else {
-                fileName.delete();
                 try {
                     FileOutputStream fis = new FileOutputStream(fileName);
                     ObjectOutputStream oos = new ObjectOutputStream(fis);
@@ -213,12 +217,14 @@ public class WhiteboardListener extends Component
                     oos.writeObject(server.getWhiteBoard());
                     JOptionPane.showMessageDialog(null, "Success！");
                     oos.close();
+                    this.path = fileName.getPath();
                 } catch (Exception e){
                 }
             }
+
         } else {
             try {
-                FileOutputStream fis = new FileOutputStream(defaultPath);
+                FileOutputStream fis = new FileOutputStream(path);
                 ObjectOutputStream oos = new ObjectOutputStream(fis);
                 // re-paint shapearray to canvas
                 oos.writeObject(server.getWhiteBoard());
@@ -227,6 +233,7 @@ public class WhiteboardListener extends Component
             } catch (Exception e){
             }
         }
+
     }
 
     // ============================ draw ==============================
@@ -277,21 +284,50 @@ public class WhiteboardListener extends Component
         switch (cmd) {
             case "New":
 //                System.out.println("click save as");
-                int value=JOptionPane.showConfirmDialog(null, "save current work？", "Warning", 0);
-                if(value==0){
-                    try{
-                        saveFile("");
-                    } catch (IOException e1){
-                        System.out.println("failed to save");
+                try {
+                    if (server.getAllShapes().size() == 0){
+                        path = "";
+                        canvas.repaint(); // clear canvas
+                    } else {
+                        int value=JOptionPane.showConfirmDialog(null, "save current work？", "Warning", 0);
+                        if (value == 0){
+                            saveFile(path);
+                            path = "";
+                            canvas.repaint(); // clear canvas
+                        } else {
+                            path = "";
+                            canvas.repaint(); // clear canvas
+                        }
                     }
-                } else {
-                    canvas.repaint(); // clear canvas
+                } catch ( IOException ex) {
+                    ex.printStackTrace();
                 }
+
+//                if(value==0){
+//                    try{
+//                        saveFile("");
+//                    } catch (IOException e1){
+//                        System.out.println("failed to save");
+//                    }
+//                } else {
+//                    canvas.repaint(); // clear canvas
+//                }
 
                 break;
             case "Open":
                 try {
-                    openFile();
+                    if (server.getAllShapes().size() == 0){
+                        openFile();
+                    }else {
+                        int value =JOptionPane.showConfirmDialog(null, "save current work？", "Warning", 0);
+                        if (value == 0){
+                            saveFile(path);
+                            openFile();
+                        } else {
+                            openFile();
+                        }
+
+                    }
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -300,7 +336,7 @@ public class WhiteboardListener extends Component
             case "Save":
 //                System.out.println("click save");
                 try {
-                    saveFile(defaultPath);
+                    saveFile(path);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
