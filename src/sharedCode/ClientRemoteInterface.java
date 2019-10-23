@@ -13,4 +13,6 @@ public interface ClientRemoteInterface extends Remote {
     void displayMsg(String msg) throws RemoteException;
 
     void displayUserList(ArrayList<String> users) throws RemoteException;
+
+    String getUsername() throws RemoteException;
 }

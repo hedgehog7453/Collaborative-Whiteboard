@@ -15,7 +15,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     ClientRemoteInterface manager;
     String managerName;
     HashMap<String, ClientRemoteInterface> users;
-    ArrayList<String> message;
+    ArrayList<String> messages;
     ArrayList<String> userList;
     String msg;
 
@@ -26,7 +26,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         managerName = "";
         msg = "";
         users = new HashMap<>();
-        message = new ArrayList<>();
+        messages = new ArrayList<>();
         userList = new ArrayList<>();
     }
 
@@ -75,9 +75,9 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     }
 
     @Override
-    public void sendMessage(String msg) throws RemoteException {
+    public void sendMessage(String msg, String username) throws RemoteException {
         try {
-            this.msg = this.msg + RemoteServer.getClientHost() +": " +msg + "\n";
+            this.msg =  this.msg + username +": " +msg + "\n";
             manager.displayMsg(this.msg);
             for (ClientRemoteInterface client : users.values()) {
                 client.displayMsg(this.msg );

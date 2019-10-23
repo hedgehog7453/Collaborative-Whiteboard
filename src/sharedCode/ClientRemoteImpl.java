@@ -39,4 +39,10 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
         thisWb.getDrawListener().displayOnlineUsers(users, false);
     }
 
+    @Override
+    public String getUsername() throws RemoteException {
+        return thisWb.getUsername();
+    }
+
+
 }

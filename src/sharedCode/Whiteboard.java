@@ -23,6 +23,7 @@ public class Whiteboard {
     private WhiteboardWindow wbw;
 
     private DrawListener dl;
+    private String username;
 
     public void initialiseApp(boolean isManager) {
         this.isManager = isManager;
@@ -30,7 +31,7 @@ public class Whiteboard {
         // RMI
         try {
             // find server
-            server = (ServerRemoteInterface) Naming.lookup("rmi://192.168.0.145:8081/server");
+            server = (ServerRemoteInterface) Naming.lookup("rmi://192.168.88.80:8081/server");
 
             // Client
             client = new ClientRemoteImpl(this);
@@ -50,8 +51,9 @@ public class Whiteboard {
         if (isConnected) {
             // GUI
             try {
-                dl = new DrawListener(server);
+                dl = new DrawListener(server, client);
                 wbw = new WhiteboardWindow(dl, isManager);
+                dl.setWindow(wbw);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -88,6 +90,7 @@ public class Whiteboard {
             boolean status = server.clientConnect(isManager, username, client);
             if (status) {
                 JOptionPane.showConfirmDialog(null, "You are now in the room!", "Congratulations", JOptionPane.DEFAULT_OPTION);
+                this.username = username;
             } else {
                 JOptionPane.showConfirmDialog(null, "You are rejected by the manager.", "Oh no :(", JOptionPane.DEFAULT_OPTION);
             }
@@ -99,6 +102,10 @@ public class Whiteboard {
 
     public DrawListener getDrawListener() {
         return dl;
+    }
+
+    public String getUsername(){
+        return this.username;
     }
 
 

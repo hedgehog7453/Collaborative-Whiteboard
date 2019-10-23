@@ -1,5 +1,6 @@
 package sharedCode;
 
+import gui.WhiteboardWindow;
 import server.ServerRemoteInterface;
 
 import javax.print.DocFlavor;
@@ -21,6 +22,7 @@ import java.util.Iterator;
 public class DrawListener extends Component
         implements ActionListener, MouseListener, MouseMotionListener {
 
+    private final ClientRemoteInterface client;
     private ServerRemoteInterface server;
 
     private JPanel canvas;
@@ -35,10 +37,12 @@ public class DrawListener extends Component
     private JTextArea chatInput;
     private JTextPane chatOutput;
     private JScrollPane userTab;
+    private WhiteboardWindow window;
 
 
-    public DrawListener(ServerRemoteInterface server) {
+    public DrawListener(ServerRemoteInterface server, ClientRemoteInterface client) {
         this.server = server;
+        this.client = client;
         initToolData();
     }
 
@@ -102,7 +106,7 @@ public class DrawListener extends Component
                 break;
             case "Post":
                 try{
-                    server.sendMessage(this.chatInput.getText());
+                    server.sendMessage(this.window.getMes(), this.client.getUsername());
                 } catch (RemoteException e3){
                     System.out.println("failed to send message");
                 }
@@ -312,10 +316,6 @@ public class DrawListener extends Component
                 }
     }
 
-//    public JPanel getCanvas() {
-//        return canvas;
-//    }
-
     /**
      * Set the canvas to draw on
      */
@@ -325,19 +325,21 @@ public class DrawListener extends Component
         setG(canvas.getGraphics());
     }
 
-    public void setChatPanel(JTextArea input, JTextPane output){
-        this.chatInput = input;
-        this.chatOutput = output;
-        System.out.println("set chat panel");
-    }
+//    public void setChatPanel(JTextArea input, JTextPane output){
+//        this.chatInput = input;
+//        this.chatOutput = output;
+//        System.out.println("set chat panel");
+//    }
 
     public void broadcastMes(String msg){
-        this.chatOutput.setText(msg);
+        this.window.appendTextToMessages(msg);
+
     }
 
     public void setUserTab(JScrollPane userTab){
         this.userTab = userTab;
     }
+
 
     public void displayOnlineUsers(ArrayList<String> list, boolean isManager)
     {
@@ -393,6 +395,10 @@ public class DrawListener extends Component
 
     public void paint(Shape shape) {
         shape.drawshape(g);
+    }
+
+    public void setWindow(WhiteboardWindow win){
+        this.window = win;
     }
 
     // Paint data

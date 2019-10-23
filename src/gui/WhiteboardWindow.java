@@ -453,7 +453,7 @@ public class WhiteboardWindow extends JFrame{
         gbc_btnPost.gridx = 1;
         gbc_btnPost.gridy = 1;
         chatPanel.add(btnPost, gbc_btnPost);
-        dl.setChatPanel(taInputMessage, tpUsersMessages);
+//        dl.setChatPanel(taInputMessage, tpUsersMessages);
         communicationTabbedPane.addTab("Chat", chatPanel);
 
         // View users tab
@@ -548,6 +548,16 @@ public class WhiteboardWindow extends JFrame{
         taInputMessage.setEnabled(false);
         btnPost.setEnabled(false);
         isConnected = false;
+    }
+
+    public String getMes(){
+        String message = taInputMessage.getText();
+        return message;
+    }
+
+    public void appendTextToMessages(String newText)
+    {
+        tpUsersMessages.setText(newText);
     }
 
 //    private void displayOnlineUsers(JScrollPane viewUsersScrollPane, boolean isManager)

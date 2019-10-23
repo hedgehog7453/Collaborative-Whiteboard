@@ -13,7 +13,7 @@ public interface ServerRemoteInterface extends Remote {
 
     ArrayList<Shape> getWhiteBoard() throws RemoteException;
     void addShape(Shape shape) throws RemoteException;
-    void sendMessage(String msg) throws RemoteException;
+    void sendMessage(String msg, String username) throws RemoteException;
     void getUserList() throws RemoteException;
     //void editWhiteBoard(ArrayList<sharedCode.Shape> shape) throws RemoteException;
 }
