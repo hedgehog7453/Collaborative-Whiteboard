@@ -3,6 +3,7 @@ package sharedCode;
 import gui.WhiteboardWindow;
 import server.ServerRemoteInterface;
 
+import javax.sound.midi.SysexMessage;
 import javax.swing.*;
 
 import java.awt.*;
@@ -39,6 +40,172 @@ public class WhiteboardListener extends Component
         this.server = server;
         this.client = client;
         initToolData();
+    }
+
+    public void setWindow(WhiteboardWindow win){
+        this.window = win;
+    }
+
+    public String getUsername() {
+        try {
+            return client.getUsername();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    // =============================== connection ===============================
+    public boolean connectToServer() {
+        try {
+            boolean isManager = client.getIsManager();
+            String opTitle = "";
+            if (isManager) {
+                opTitle = "Creating a room ... ";
+            } else {
+                opTitle = "Joining a room ...";
+            }
+            boolean isUnique = false;
+            String username = "";
+            while (!isUnique) {
+                JFrame frame = new JFrame("Connection");
+                username = JOptionPane.showInputDialog(frame, "Please enter your username: ",
+                        opTitle, JOptionPane.QUESTION_MESSAGE);
+                if (username == null) {
+                    System.out.println("Bye");
+                    System.exit(0);
+                }
+                if (username.length() < 4) { // TODO: more validation (no space, etc.)
+                    JOptionPane.showConfirmDialog(null, "Please enter a valid username. Your username needs to be longer than 4 letters.", "", JOptionPane.DEFAULT_OPTION);
+                    continue;
+                }
+                isUnique = server.isUsernameUnique(username);
+                if (!isUnique) {
+                    JOptionPane.showConfirmDialog(null, "Username already exists. ", "", JOptionPane.DEFAULT_OPTION);
+                }
+            }
+            boolean status = server.clientConnect(isManager, username, client);
+            if (status) {
+                JOptionPane.showConfirmDialog(null, "You are now in the room!", "Congratulations", JOptionPane.DEFAULT_OPTION);
+            } else {
+                JOptionPane.showConfirmDialog(null, "You are rejected by the manager.", "Oh no :(", JOptionPane.DEFAULT_OPTION);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    public boolean disconnectFromServer() {
+        try {
+            boolean isManager = client.getIsManager();
+            if (isManager) {
+                boolean removeAll =  server.removeAllUsers();
+                if (removeAll){
+                    JOptionPane.showConfirmDialog(null,"Remove all users successfully.","",JOptionPane.DEFAULT_OPTION);
+                    System.exit(0);
+                }else{
+                    JOptionPane.showConfirmDialog(null,"Failed to remove all users.","",JOptionPane.DEFAULT_OPTION);
+                    return removeAll;
+                }
+
+            } else {
+                boolean disconnect = server.clientDisconnect(getUsername(),client);
+//                if (disconnect){
+//                    window.setGuiToDisconnected();
+//                    JOptionPane.showConfirmDialog(null,"Disconnected successfully.","",JOptionPane.DEFAULT_OPTION);
+//                }else{
+//                    JOptionPane.showConfirmDialog(null,"Failed to disconnect.","",JOptionPane.DEFAULT_OPTION);
+//                }
+                return disconnect;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+
+    }
+
+    public void forceQuit(String message){
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                JOptionPane.showConfirmDialog(null,message,"",JOptionPane.DEFAULT_OPTION);
+                System.exit(0);
+            }
+        });
+    }
+
+    public void closeWhiteBoard(){
+
+    }
+
+    // ============================ file ==============================
+    public void openFile() throws IOException {
+        int value=JOptionPane.showConfirmDialog(null, "save current work？", "Warning", 0);
+        if(value==0){
+            saveFile("");
+        }
+        if(value==1){
+            canvas.repaint(); // clear canvas
+            try {
+                // alert user to choose file
+                JFileChooser chooser = new JFileChooser();
+                chooser.showOpenDialog(null);
+                File file =chooser.getSelectedFile();
+                if(file==null){
+                    JOptionPane.showMessageDialog(null, "Didn't select file");
+                }
+                else {
+                    // create output stream
+                    FileInputStream fis = new FileInputStream(file);
+                    ObjectInputStream ois = new ObjectInputStream(fis);
+                    // cast to shape type
+                    ArrayList<Shape> list =(ArrayList<Shape>)ois.readObject();
+                    // re-paint canvas
+                    paint(g, list);
+                    ois.close();
+                }
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    public void saveFile(String path) throws IOException {
+        if (path.equals("")){
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            int result = fileChooser.showSaveDialog(this);
+            if (result == JFileChooser.CANCEL_OPTION) {
+                return;
+            }
+            File fileName = fileChooser.getSelectedFile();
+            if (fileName.getName().equals("")) {
+                JOptionPane.showMessageDialog(fileChooser, "Invalid File Name",
+                        "Invalid File Name", JOptionPane.ERROR_MESSAGE);
+            } else {
+                fileName.delete();
+                try {
+                    FileOutputStream fis = new FileOutputStream(fileName);
+                    ObjectOutputStream oos = new ObjectOutputStream(fis);
+                    // re-paint shapearray to canvas
+                    oos.writeObject(server.getWhiteBoard());
+                    JOptionPane.showMessageDialog(null, "Success！");
+                    oos.close();
+                } catch (Exception e){
+                }
+            }
+        } else {
+            try {
+                FileOutputStream fis = new FileOutputStream(defaultPath);
+                ObjectOutputStream oos = new ObjectOutputStream(fis);
+                // re-paint shapearray to canvas
+                oos.writeObject(server.getWhiteBoard());
+                JOptionPane.showMessageDialog(null, "Success！");
+                oos.close();
+            } catch (Exception e){
+            }
+        }
     }
 
     // ============================ draw ==============================
@@ -100,13 +267,12 @@ public class WhiteboardListener extends Component
                 }
 //                System.out.println("click save as");
                 break;
-            case "Post":
-                try{
-                    server.sendMessage(this.window.getMes(), this.client.getUsername());
-                } catch (RemoteException e3){
-                    System.out.println("failed to send message");
-                }
-//                System.out.println(this.chatInput.getText());
+            case "Close":
+                disconnectFromServer();
+                System.exit(0);
+                break;
+            case "Disconnect":
+                disconnectFromServer();
             default:
                 System.out.println(cmd + " clicked");
         }
@@ -232,74 +398,6 @@ public class WhiteboardListener extends Component
     public void mouseExited(MouseEvent e) {
     }
 
-    public void openFile() throws IOException {
-        int value=JOptionPane.showConfirmDialog(null, "save current work？", "Warning", 0);
-        if(value==0){
-            saveFile("");
-        }
-        if(value==1){
-            canvas.repaint(); // clear canvas
-            try {
-                // alert user to choose file
-                JFileChooser chooser = new JFileChooser();
-                chooser.showOpenDialog(null);
-                File file =chooser.getSelectedFile();
-                if(file==null){
-                    JOptionPane.showMessageDialog(null, "Didn't select file");
-                }
-                else {
-                    // create output stream
-                    FileInputStream fis = new FileInputStream(file);
-                    ObjectInputStream ois = new ObjectInputStream(fis);
-                    // cast to shape type
-                    ArrayList<Shape> list =(ArrayList<Shape>)ois.readObject();
-                    // re-paint canvas
-                    paint(g, list);
-                    ois.close();
-                }
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
-        }
-    }
-
-    public void saveFile(String path) throws IOException {
-        if (path.equals("")){
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        int result = fileChooser.showSaveDialog(this);
-        if (result == JFileChooser.CANCEL_OPTION) {
-            return;
-        }
-        File fileName = fileChooser.getSelectedFile();
-        if (fileName.getName().equals("")) {
-            JOptionPane.showMessageDialog(fileChooser, "Invalid File Name",
-                    "Invalid File Name", JOptionPane.ERROR_MESSAGE);
-        } else {
-            fileName.delete();
-            try {
-                FileOutputStream fis = new FileOutputStream(fileName);
-                ObjectOutputStream oos = new ObjectOutputStream(fis);
-                // re-paint shapearray to canvas
-                oos.writeObject(server.getWhiteBoard());
-                JOptionPane.showMessageDialog(null, "Success！");
-                oos.close();
-            } catch (Exception e){
-            }
-        }
-    } else {
-            try {
-                FileOutputStream fis = new FileOutputStream(defaultPath);
-                ObjectOutputStream oos = new ObjectOutputStream(fis);
-                // re-paint shapearray to canvas
-                oos.writeObject(server.getWhiteBoard());
-                JOptionPane.showMessageDialog(null, "Success！");
-                oos.close();
-            } catch (Exception e){
-            }
-        }
-    }
-
     // 重写panel的paint方法，让repaint能够调用
     public void paint(Graphics g, ArrayList<Shape> array) {
         super.paint(g);
@@ -310,6 +408,10 @@ public class WhiteboardListener extends Component
                         break;
                     }
                 }
+    }
+
+    public void paint(Shape shape) {
+        shape.drawshape(g);
     }
 
     /**
@@ -328,21 +430,33 @@ public class WhiteboardListener extends Component
         this.window.appendTextToMessages(msg);
     }
 
+    public void postMessage(String msg) {
+        try{
+            server.sendMessage(msg, this.client.getUsername());
+        } catch (RemoteException e3){
+            System.out.println("failed to send message");
+        }
+    }
+
     public void updateOnlineUsers(String managerName, ArrayList<String> usernames) {
         this.window.displayOnlineUsers(managerName, usernames);
     }
 
     public void kickUser(String username) {
-        
+        try {
+            server.kickUser(username);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    public void paint(Shape shape) {
-        shape.drawshape(g);
-    }
 
-    public void setWindow(WhiteboardWindow win){
-        this.window = win;
-    }
+
+
+
+
+
 
     // Paint data
     private ArrayList<String> paintToolsOrder;
@@ -395,26 +509,6 @@ public class WhiteboardListener extends Component
         colourData.put("DARKGREY", Color.DARK_GRAY);
         colourData.put("LIGHTGREY", Color.LIGHT_GRAY);
         colourData.put("WHITE", Color.WHITE);
-    }
-
-//    @Override
-//    public void stateChanged(ChangeEvent e) {
-//
-//        System.out.println(this.userTab.getViewport().getName());
-//        try{
-//            server.getUserList();
-//        } catch (RemoteException e1){
-//            System.out.println("");
-//        }
-//    }
-
-    public String getUsername() {
-        try {
-            return client.getUsername();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return "";
     }
 }
 

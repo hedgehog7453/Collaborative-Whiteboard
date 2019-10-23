@@ -12,45 +12,41 @@ import java.rmi.registry.LocateRegistry;
 
 public class Whiteboard {
 
-    private boolean isManager;
-    private boolean isConnected;
-
     // RMI
     private ServerRemoteInterface server;
     private ClientRemoteInterface client;
 
     // GUI
     private WhiteboardWindow wbw;
-
     private WhiteboardListener wl;
 
     public void initialiseApp(boolean isManager) {
-        this.isManager = isManager;
-
         // RMI
         try {
             // find server
             server = (ServerRemoteInterface) Naming.lookup("rmi://localhost:8081/server");
 
             // Client
-            client = new ClientRemoteImpl(this);
+            client = new ClientRemoteImpl();
             if (!isManager) {
                 LocateRegistry.createRegistry(8082);
                 Naming.rebind("rmi://localhost:8082/client", client);
             } else {
                 Naming.rebind("rmi://localhost:8081/client", client);
             }
+            client.setIsManager(isManager);
+            wl = new WhiteboardListener(server, client);
+            wbw = new WhiteboardWindow(wl, isManager);
+            wl.setWindow(wbw);
+            client.setWhiteboardListener(wl);
         } catch (RemoteException | NotBoundException | MalformedURLException e){
+            //TODO
             e.printStackTrace();
             System.out.println("RMI connection failed.");
             System.exit(0);
         }
 
-        wl = new WhiteboardListener(server, client);
-        wbw = new WhiteboardWindow(wl, isManager);
-        wl.setWindow(wbw);
-
-        isConnected = connectToServer();
+        boolean isConnected = wl.connectToServer();
         if (isConnected) {
             // GUI
             try {
@@ -60,58 +56,5 @@ public class Whiteboard {
             }
         }
     }
-
-    private boolean connectToServer() {
-        try {
-            String opTitle = "";
-            if (isManager) {
-                opTitle = "Creating a room ... ";
-            } else {
-                opTitle = "Joining a room ...";
-            }
-            boolean isUnique = false;
-            String username = "";
-            while (!isUnique) {
-                JFrame frame = new JFrame("Connection");
-                username = JOptionPane.showInputDialog(frame, "Please enter your username: ",
-                        opTitle, JOptionPane.QUESTION_MESSAGE);
-                if (username == null) {
-                    System.out.println("Bye");
-                    System.exit(0);
-                }
-                if (username.length() < 4) { // TODO: more validation (no space, etc.)
-                    JOptionPane.showConfirmDialog(null, "Please enter a valid username. Your username needs to be longer than 4 letters.", "", JOptionPane.DEFAULT_OPTION);
-                    continue;
-                }
-                isUnique = server.isUsernameUnique(username);
-                if (!isUnique) {
-                    JOptionPane.showConfirmDialog(null, "Username already exists. ", "", JOptionPane.DEFAULT_OPTION);
-                }
-            }
-            boolean status = server.clientConnect(isManager, username, client);
-            if (status) {
-                JOptionPane.showConfirmDialog(null, "You are now in the room!", "Congratulations", JOptionPane.DEFAULT_OPTION);
-            } else {
-                JOptionPane.showConfirmDialog(null, "You are rejected by the manager.", "Oh no :(", JOptionPane.DEFAULT_OPTION);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
-    public WhiteboardListener getDrawListener() {
-        return wl;
-    }
-
-    public String getUsername(){
-        try {
-            return client.getUsername();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
 
 }

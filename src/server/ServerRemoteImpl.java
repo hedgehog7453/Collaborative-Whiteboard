@@ -61,6 +61,41 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     }
 
     @Override
+    public boolean clientDisconnect(String username, ClientRemoteInterface client) throws RemoteException{
+        if(users.containsKey(username)){
+            users.remove(username);
+            client.setIsConnected(false);
+            updateAllUserlists();
+            return true;
+        }else{
+            System.out.println("user does not exist.");
+            return false;
+        }
+    }
+
+    @Override
+    public boolean removeAllUsers() throws RemoteException{
+        for (ClientRemoteInterface client : users.values()) {
+            client.forceQuit("Manager has left the room. You are forced to quit.");
+        }
+        return true;
+
+    }
+
+    @Override
+    public boolean kickUser(String username) throws RemoteException {
+        ClientRemoteInterface client = users.get(username);
+        System.out.println(client);
+        if (client != null) {
+            client.forceQuit("You are kicked out of the room by the manager.");
+            System.out.println("forced");
+            clientDisconnect(username, client);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public void updateAllUserlists() throws RemoteException {
         try {
             System.out.println("update user list");

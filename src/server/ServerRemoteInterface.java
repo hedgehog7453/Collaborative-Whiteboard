@@ -11,6 +11,9 @@ import java.util.Set;
 public interface ServerRemoteInterface extends Remote {
     boolean isUsernameUnique(String username) throws RemoteException;
     boolean clientConnect(boolean isManager, String username, ClientRemoteInterface client) throws RemoteException;
+    boolean clientDisconnect(String username, ClientRemoteInterface client) throws RemoteException;
+    boolean removeAllUsers() throws RemoteException;
+    boolean kickUser(String username) throws RemoteException;
     void updateAllUserlists() throws RemoteException;
 
     ArrayList<Shape> getWhiteBoard() throws RemoteException;

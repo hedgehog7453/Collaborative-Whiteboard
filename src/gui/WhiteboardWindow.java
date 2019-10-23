@@ -117,24 +117,7 @@ public class WhiteboardWindow extends JFrame{
 
         // Close the application
         mntmClose = new JMenuItem("Close");
-        mntmClose.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//                if (isConnected){
-//                    int answer = JOptionPane.showConfirmDialog(null, "You will disconnect from the room. \nAre you sure you want to close the window?");
-//                    // 0 is yes
-//                    if (answer == 0) {
-//                        boolean status = chatManager.disconnectToManager();
-//                        if (!status) {
-//                            // TODO: disconnection not successful, show dialog
-//                            JOptionPane.showMessageDialog(null,"<html>Disconnection unsuccessful!<br>Please contact the developer</html>");
-//                            return;
-//                        }
-//                    }
-//                }
-                // TODO: close the window
-            }
-        });
+        mntmClose.addActionListener(wl);
         mnFile.add(mntmClose);
 
         // -------------- Connection ----------------
@@ -148,7 +131,13 @@ public class WhiteboardWindow extends JFrame{
                 if (isConnected) {
                     JOptionPane.showMessageDialog(null, "You are already connected. \nDraw something or say hi in the chat window!");
                 } else {
-                    // TODO: prepareLoginWindow();
+                    boolean status = wl.connectToServer();
+                    if (status) {
+                        setGuiToConnected();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Connection failed.");
+                    }
+
                 }
             }
         });
@@ -159,22 +148,23 @@ public class WhiteboardWindow extends JFrame{
         mntmDisconnect.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                if (isConnected){
-//                    // 0 is yes
-//                    int answer = JOptionPane.showConfirmDialog(null, "Disconnect from the room?\nYour work will not be saved unless it's saved by other collaborators.");
-//                    if (answer == 0) {
-//                        boolean status = chatManager.disconnectToManager();
-//                        if (status) { // disconnection successful
-//                            setGuiToDisconnected();
-//                        } else {
-//                            JOptionPane.showMessageDialog(null,"<html>Disconnection unsuccessful!<br>Please contact the developer</html>");
-//                            // TODO: disconnection unsuccessful, show dialog
-//                            return;
-//                        }
-//                    }
-//                } else {
-//                    JOptionPane.showMessageDialog(null,"You are currently not connected to any room.\n");
-//                }
+                if (isConnected){
+                    // 0 is yes
+                    int answer = JOptionPane.showConfirmDialog(null, "Disconnect from the room?\nYour work will not be saved unless it's saved by other collaborators.");
+                    if (answer == 0) {
+                        boolean status = wl.disconnectFromServer();
+                        if (status) { // disconnection successful
+                            JOptionPane.showConfirmDialog(null,"Disconnected successfully.","",JOptionPane.DEFAULT_OPTION);
+                            setGuiToDisconnected();
+                        } else {
+                            JOptionPane.showMessageDialog(null,"<html>Disconnection unsuccessful!<br>Please contact the developer</html>");
+                            // TODO: disconnection unsuccessful, show dialog
+                            return;
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null,"You are currently not connected to any room.\n");
+                }
             }
         });
         mnConnection.add(mntmDisconnect);
@@ -452,8 +442,12 @@ public class WhiteboardWindow extends JFrame{
         chatPanel.add(inputScrollPane, gbc_inputScrollPane);
         // Post button
         btnPost = new JButton("Post");
-        btnPost.addActionListener(wl);
-//                // TODO: boolean sent = chatManager.sendMessage(message);
+        btnPost.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                wl.postMessage(taInputMessage.getText());
+                taInputMessage.setText("");
+            }
+        });
         GridBagConstraints gbc_btnPost = new GridBagConstraints();
         gbc_btnPost.fill = GridBagConstraints.BOTH;
         gbc_btnPost.gridx = 1;
@@ -552,11 +546,6 @@ public class WhiteboardWindow extends JFrame{
         taInputMessage.setEnabled(false);
         btnPost.setEnabled(false);
         isConnected = false;
-    }
-
-    public String getMes(){
-        String message = taInputMessage.getText();
-        return message;
     }
 
     public void appendTextToMessages(String newText)

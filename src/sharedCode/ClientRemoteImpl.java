@@ -8,12 +8,13 @@ import java.util.Set;
 
 public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemoteInterface {
 
-    private Whiteboard thisWb;
+    private WhiteboardListener wbl;
 
     private String username;
+    private boolean isManager;
+    private boolean isConnected;
 
-    public ClientRemoteImpl(Whiteboard wb) throws RemoteException {
-        this.thisWb = wb;
+    public ClientRemoteImpl() throws RemoteException {
     }
 
     public boolean getApproval(String username) throws RemoteException {
@@ -26,19 +27,39 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
     }
 
     public void drawNewShape(Shape shape) {
-        thisWb.getDrawListener().paint(shape);
+        wbl.paint(shape);
     }
 
     @Override
     public void displayMsg(String msg) throws RemoteException {
         System.out.println("server call back to display message");
-        thisWb.getDrawListener().displayMes(msg);
+        wbl.displayMes(msg);
     }
 
     @Override
     public void displayUserList(String managerName, ArrayList<String> users) throws RemoteException {
         System.out.println("server call back to display user list");
-        thisWb.getDrawListener().updateOnlineUsers(managerName, users);
+        wbl.updateOnlineUsers(managerName, users);
+    }
+
+    @Override
+    public void forceQuit(String message) throws RemoteException {
+        wbl.forceQuit(message);
+    }
+
+    @Override
+    public void setWhiteboardListener(WhiteboardListener wbl) throws RemoteException {
+        this.wbl = wbl;
+    }
+
+    @Override
+    public void setIsManager(boolean isManager) throws RemoteException {
+        this.isManager = isManager;
+    }
+
+    @Override
+    public void setIsConnected(boolean isConnected) throws RemoteException {
+        this.isConnected = isConnected;
     }
 
     @Override
@@ -48,8 +69,17 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
     }
 
     @Override
+    public boolean getIsManager() throws RemoteException {
+        return isManager;
+    }
+
+    @Override
+    public boolean getIsConnected() throws RemoteException {
+        return isConnected;
+    }
+
+    @Override
     public String getUsername() throws RemoteException {
-        System.out.println(username);
         return username;
     }
 
