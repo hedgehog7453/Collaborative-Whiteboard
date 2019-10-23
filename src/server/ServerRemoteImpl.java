@@ -4,32 +4,32 @@ import sharedCode.ClientRemoteInterface;
 import sharedCode.Shape;
 
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteServer;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemoteInterface {
 
     // Online user management
-    ClientRemoteInterface manager;
     String managerName;
+    ClientRemoteInterface manager;
     HashMap<String, ClientRemoteInterface> users;
-    ArrayList<String> messages;
-    ArrayList<String> userList;
-    String msg;
 
     // draw
     ArrayList<sharedCode.Shape> shapeArrayList = new ArrayList<>();
 
+    // chat
+    ArrayList<String> messages;
+
+
     public ServerRemoteImpl() throws RemoteException {
         managerName = "";
-        msg = "";
-        users = new HashMap<>();
+        users = new HashMap<String, ClientRemoteInterface>();
         messages = new ArrayList<>();
-        userList = new ArrayList<>();
     }
-
 
     public boolean isUsernameUnique(String username) {
         if (managerName.equals(username)) {
@@ -43,18 +43,39 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         if (isManager) {
             manager = client;
             managerName = username;
-            userList.add(managerName);
-            System.out.println("manager " + username + " joined");
+            client.setUsername(username);
+            updateAllUserlists();
+            broadcastMessage(username + " just joined the room as manager.");
             return true;
         } else {
-            userList.add(username);
-            users.put(username, client);
             boolean managerApproved = manager.getApproval(username);
             if (managerApproved) {
-                System.out.println("user " + username + " joined");
+                users.put(username, client);
+                client.setUsername(username);
+                updateAllUserlists();
+                broadcastMessage(username + " just joined the room.");
                 return true;
             }
             return false;
+        }
+    }
+
+    @Override
+    public void updateAllUserlists() throws RemoteException {
+        try {
+            System.out.println("update user list");
+            if (!users.isEmpty()) {
+                System.out.println(users.keySet());
+                manager.displayUserList(managerName, users.keySet());
+                for (ClientRemoteInterface client : users.values()) {
+                    client.displayUserList(managerName, users.keySet());
+                }
+            } else {
+                manager.displayUserList(managerName, null);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("server failed to update user list");
         }
     }
 
@@ -76,24 +97,51 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
 
     @Override
     public void sendMessage(String msg, String username) throws RemoteException {
+        String thismsg = "";
+        if (username.equals(managerName)) {
+            thismsg = username +" (Manager): " + msg;
+        } else {
+            thismsg = username +": " + msg;
+        }
+        broadcastMessage(thismsg);
+    }
+
+    public void broadcastMessage(String msg) throws RemoteException {
         try {
-            this.msg =  this.msg + username +": " +msg + "\n";
-            manager.displayMsg(this.msg);
-            for (ClientRemoteInterface client : users.values()) {
-                client.displayMsg(this.msg );
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            SimpleDateFormat sdf = new SimpleDateFormat("[HH:mm:ss] ");
+            String thismsg = sdf.format(timestamp) + msg;
+            messages.add(thismsg);
+            manager.displayMsg(thismsg);
+            if (!users.isEmpty()) {
+                for (ClientRemoteInterface client : users.values()) {
+                    client.displayMsg(thismsg);
+                }
             }
         } catch (Exception e){
-            System.out.println("server failed to send message");
+            e.printStackTrace();
+            System.out.println("server failed to broadcast message");
         }
-
     }
 
     @Override
-    public void getUserList() throws RemoteException {
-        System.out.println("client call server to get user list");
-        for (ClientRemoteInterface client : users.values()) {
-            client.displayUserList(userList);
+    public String getManagerName() throws RemoteException {
+        return managerName;
+    }
+
+    @Override
+    public Set<String> getUserList() throws RemoteException {
+        if (users.isEmpty()) {
+            System.out.println("userlist is null");
+            return null;
+        } else {
+            System.out.println("return userlist size: " + users.keySet().size());
+            return users.keySet();
         }
+    }
+
+    public ArrayList<String> getAllMessages() throws RemoteException {
+        return messages;
     }
 //    @Override
 //    public void editWhiteBoard(ArrayList<sharedCode.Shape> shape) throws RemoteException {

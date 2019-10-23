@@ -1,12 +1,13 @@
 package gui;
 
-import sharedCode.DrawListener;
+import sharedCode.WhiteboardListener;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Set;
 
 public class WhiteboardWindow extends JFrame{
 
@@ -49,20 +50,25 @@ public class WhiteboardWindow extends JFrame{
     private JTextPane tpUsersMessages;
     private JTextArea taInputMessage;
     private JButton btnPost;
+    private JScrollPane viewUsersScrollPane;
 
-    private DrawListener dl;
+    //
+    private WhiteboardListener wl;
 
     private boolean isManager;
     private boolean isConnected;
 
-    public WhiteboardWindow(DrawListener dl, boolean isManager) {
-        this.dl = dl;
+    public WhiteboardWindow(WhiteboardListener wl, boolean isManager) {
+        this.wl = wl;
         this.isManager = isManager;
         this.isConnected = true;
         initialiseWindow();
+    }
+
+    public void showWindow() {
         frame.pack();
         frame.setVisible(true);
-        dl.setCanvas(canvasPanel);
+        wl.setCanvas(canvasPanel);
         setGuiToConnected();
     }
 
@@ -93,20 +99,20 @@ public class WhiteboardWindow extends JFrame{
 
         // Create new canvas
         mntmNew = new JMenuItem("New");
-        mntmNew.addActionListener(dl);
+        mntmNew.addActionListener(wl);
         mnFile.add(mntmNew);
 
         // Open local image
         mntmOpen = new JMenuItem("Open");
-        mntmOpen.addActionListener(dl);
+        mntmOpen.addActionListener(wl);
         mnFile.add(mntmOpen);
 
         // Save current canvas
         mntmSave = new JMenuItem("Save");
-        mntmSave.addActionListener(dl);
+        mntmSave.addActionListener(wl);
         mnFile.add(mntmSave);
         mntmSaveAs = new JMenuItem("Save as");
-        mntmSaveAs.addActionListener(dl);
+        mntmSaveAs.addActionListener(wl);
         mnFile.add(mntmSaveAs);
 
         // Close the application
@@ -221,7 +227,7 @@ public class WhiteboardWindow extends JFrame{
         int col = 0; int row = 0; int index = 0;
         for (JToggleButton tb : paintTools)
         {
-            String cmd = dl.getPaintToolStr(index);
+            String cmd = wl.getPaintToolStr(index);
             if (cmd == "BRUSH") tb.setSelected(true);
             tb.setActionCommand(cmd);
             tb.setPreferredSize(new Dimension(TOOL_TOGGLE_DIMENSION, TOOL_TOGGLE_DIMENSION));
@@ -242,7 +248,7 @@ public class WhiteboardWindow extends JFrame{
             // ActionListener
             tb.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    dl.toolBtnClicked(e.getActionCommand());
+                    wl.toolBtnClicked(e.getActionCommand());
                     // unselect other toggle buttons
                     for (JToggleButton this_tb : paintTools) {
                         if (this_tb.getActionCommand() != e.getActionCommand()) {
@@ -267,12 +273,12 @@ public class WhiteboardWindow extends JFrame{
                 strokeSlider.setMajorTickSpacing(5);
                 strokeSlider.setPaintTicks(true);
                 strokeSlider.setPaintLabels(true);
-                strokeSlider.setValue(dl.getStroke());
+                strokeSlider.setValue(wl.getStroke());
                 JSlider fontSlider = new JSlider(0,50,12);
                 fontSlider.setMajorTickSpacing(10);
                 fontSlider.setPaintTicks(true);
                 fontSlider.setPaintLabels(true);
-                fontSlider.setValue(dl.getFontSize());
+                fontSlider.setValue(wl.getFontSize());
 
                 sizePanel.add(new JLabel("Brush Stroke:"));
                 sizePanel.add(strokeSlider);
@@ -282,7 +288,7 @@ public class WhiteboardWindow extends JFrame{
                 int result = JOptionPane.showConfirmDialog(null,sizePanel,
                         "Please choose the brush stroke and font size:",JOptionPane.OK_CANCEL_OPTION);
                 if(result == JOptionPane.OK_OPTION) {
-                    dl.sizeBtnClicked(strokeSlider.getValue(), fontSlider.getValue());
+                    wl.sizeBtnClicked(strokeSlider.getValue(), fontSlider.getValue());
                 }
 
 
@@ -335,12 +341,12 @@ public class WhiteboardWindow extends JFrame{
         col = 0; row = 0; index = 0;
         for (JToggleButton tb : colours)
         {
-            String cmd = dl.getColourStr(index);
+            String cmd = wl.getColourStr(index);
             if (cmd == "BLACK") tb.setSelected(true);
             tb.setActionCommand(cmd);
             tb.setPreferredSize(new Dimension(TOOL_TOGGLE_DIMENSION, TOOL_TOGGLE_DIMENSION));
             tb.setOpaque(true);
-            tb.setBackground(dl.getColourByStr(dl.getColourStr(index)));
+            tb.setBackground(wl.getColourByStr(wl.getColourStr(index)));
             tb.setFont(new Font("Arial", Font.PLAIN, 10));
             // Set GridBagConstraints
             GridBagConstraints gbc = new GridBagConstraints();
@@ -358,7 +364,7 @@ public class WhiteboardWindow extends JFrame{
             // ActionListener
             tb.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    dl.colourBtnClicked(e.getActionCommand());
+                    wl.colourBtnClicked(e.getActionCommand());
                     // unselect other toggle buttons
                     for (JToggleButton this_tb : colours) {
                         if (this_tb.getActionCommand() != e.getActionCommand()) {
@@ -379,7 +385,7 @@ public class WhiteboardWindow extends JFrame{
         paletteBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Color color = JColorChooser.showDialog(toolPanel, "Color Palette", Color.black);
-                dl.paletteBtnClicked(color);
+                wl.paletteBtnClicked(color);
                 for (JToggleButton tb : colours) {
                     tb.setSelected(false);
                 }
@@ -408,8 +414,8 @@ public class WhiteboardWindow extends JFrame{
         canvasPanel.setPreferredSize(new Dimension(CANVAS_WIDTH, MAIN_PANEL_HEIGHT));
         canvasPanel.setMinimumSize(new Dimension(CANVAS_WIDTH, MAIN_PANEL_HEIGHT));
         canvasPanel.setBackground(Color.WHITE);
-        canvasPanel.addMouseListener(dl);
-        canvasPanel.addMouseMotionListener(dl);
+        canvasPanel.addMouseListener(wl);
+        canvasPanel.addMouseMotionListener(wl);
     }
 
     private void initialiseChatPanel() {
@@ -446,7 +452,7 @@ public class WhiteboardWindow extends JFrame{
         chatPanel.add(inputScrollPane, gbc_inputScrollPane);
         // Post button
         btnPost = new JButton("Post");
-        btnPost.addActionListener(dl);
+        btnPost.addActionListener(wl);
 //                // TODO: boolean sent = chatManager.sendMessage(message);
         GridBagConstraints gbc_btnPost = new GridBagConstraints();
         gbc_btnPost.fill = GridBagConstraints.BOTH;
@@ -457,14 +463,12 @@ public class WhiteboardWindow extends JFrame{
         communicationTabbedPane.addTab("Chat", chatPanel);
 
         // View users tab
-        JScrollPane viewUsersScrollPane = new JScrollPane();
+        viewUsersScrollPane = new JScrollPane();
         viewUsersScrollPane.setMinimumSize(new Dimension(CHAT_WIDTH, MAIN_PANEL_HEIGHT));
         viewUsersScrollPane.setPreferredSize(new Dimension(CHAT_WIDTH, MAIN_PANEL_HEIGHT));
         viewUsersScrollPane.setMaximumSize(new Dimension(CHAT_WIDTH, MAIN_PANEL_HEIGHT));
-        // TODO: displayOnlineUsers(viewUsersScrollPane, isManager);
         communicationTabbedPane.addTab("Online users", viewUsersScrollPane);
         viewUsersScrollPane.getViewport().setName("tab");
-        dl.setUserTab(viewUsersScrollPane);
 //        viewUsersScrollPane.getViewport().addChangeListener(dl);
         frame.getContentPane().add(communicationTabbedPane);
     }
@@ -557,61 +561,83 @@ public class WhiteboardWindow extends JFrame{
 
     public void appendTextToMessages(String newText)
     {
-        tpUsersMessages.setText(newText);
+        tpUsersMessages.setText(tpUsersMessages.getText() + newText + "\n");
     }
 
-//    private void displayOnlineUsers(JScrollPane viewUsersScrollPane, boolean isManager)
-//    {
-//        JPanel panel = new JPanel();
-//        panel.setLayout(new GridBagLayout());
-//
-//        String myUsername = chatManager.getMyUsername();
-//        ArrayList<String> allUsers = chatManager.getAllOnlineUsers();
-//
-//        final int GRID_WIDTH = 4;
-//        final int USERNAME_WIDTH;
-//        if (isManager)
-//        {
-//            USERNAME_WIDTH = 3;
-//        }
-//        else
-//        {
-//            USERNAME_WIDTH = GRID_WIDTH;
-//        }
-//        final int KICK_BTN_WIDTH = 1;
-//        final int OFFSET = 1;
-//        JLabel myNameLabel = new JLabel("Your username: " + myUsername);
-//        GridBagConstraints gbc_myNameLabel = new GridBagConstraints();
-//        gbc_myNameLabel.gridx = 0;
-//        gbc_myNameLabel.gridy = 0;
-//        gbc_myNameLabel.gridwidth = GRID_WIDTH;
-//        gbc_myNameLabel.insets = new Insets(20, 20, 20, 20);
-//        panel.add(myNameLabel, gbc_myNameLabel);
-//
-//        int row = 0;
-//        for (String username : allUsers)
-//        {
-//            JLabel usernameLabel = new JLabel(username);
-//            GridBagConstraints gbc_usernameLabel = new GridBagConstraints();
-//            gbc_usernameLabel.gridx = 0;
-//            gbc_usernameLabel.gridy = row + OFFSET;
-//            gbc_usernameLabel.gridwidth = USERNAME_WIDTH;
-//            gbc_usernameLabel.insets = new Insets(6, 6, 6, 6);
-//            panel.add(usernameLabel, gbc_usernameLabel);
-//
-//            if (isManager)
-//            {
-//                JButton kickUserBtn = new JButton("kick");
-//                GridBagConstraints gbc_kickUserBtn = new GridBagConstraints();
-//                gbc_kickUserBtn.gridx = USERNAME_WIDTH;
-//                gbc_kickUserBtn.gridy = row + OFFSET;
-//                gbc_kickUserBtn.gridwidth = KICK_BTN_WIDTH;
-//                panel.add(kickUserBtn, gbc_kickUserBtn);
-//            }
-//
-//            // Next location
-//            row++;
-//        }
-//        viewUsersScrollPane.setViewportView(panel);
-//    }
+    public void displayAllMessages(ArrayList<String> messages) {
+        for (String msg : messages) {
+            tpUsersMessages.setText(tpUsersMessages.getText() + "msg" + "\n");
+        }
+    }
+
+    public void displayOnlineUsers(String managerName, Set<String> userlist)
+    {
+        System.out.println(wl.getUsername() + " GUI display online users");
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+
+        final int GRID_WIDTH = 4;
+        final int USERNAME_WIDTH;
+        if (isManager)
+        {
+            USERNAME_WIDTH = 3;
+        }
+        else
+        {
+            USERNAME_WIDTH = GRID_WIDTH;
+        }
+        final int KICK_BTN_WIDTH = 1;
+        final int OFFSET = 2;
+
+        // user
+        String myName = wl.getUsername();
+        JLabel myNameLabel = new JLabel("Your username: " + myName);
+        GridBagConstraints gbc_myNameLabel = new GridBagConstraints();
+        gbc_myNameLabel.gridx = 0;
+        gbc_myNameLabel.gridy = 0;
+        gbc_myNameLabel.gridwidth = GRID_WIDTH;
+        gbc_myNameLabel.insets = new Insets(20, 20, 20, 20);
+        panel.add(myNameLabel, gbc_myNameLabel);
+
+        // manager
+        JLabel managerNameLabel = new JLabel("Manager: " + managerName);
+        GridBagConstraints gbc_managerNameLabel = new GridBagConstraints();
+        gbc_managerNameLabel.gridx = 0;
+        gbc_managerNameLabel.gridy = 1;
+        gbc_managerNameLabel.gridwidth = GRID_WIDTH;
+        gbc_managerNameLabel.insets = new Insets(20, 20, 20, 20);
+        panel.add(managerNameLabel, gbc_managerNameLabel);
+
+        if (userlist == null) {
+            this.viewUsersScrollPane.setViewportView(panel);
+            return;
+        }
+        int row = 0;
+        for (String username : userlist)
+        {
+            if (!username.equals(myName)) {
+                JLabel usernameLabel = new JLabel(username);
+                GridBagConstraints gbc_usernameLabel = new GridBagConstraints();
+                gbc_usernameLabel.gridx = 0;
+                gbc_usernameLabel.gridy = row + OFFSET;
+                gbc_usernameLabel.gridwidth = USERNAME_WIDTH;
+                gbc_usernameLabel.insets = new Insets(6, 6, 6, 6);
+                panel.add(usernameLabel, gbc_usernameLabel);
+
+                if (isManager)
+                {
+                    JButton kickUserBtn = new JButton("kick");
+                    GridBagConstraints gbc_kickUserBtn = new GridBagConstraints();
+                    gbc_kickUserBtn.gridx = USERNAME_WIDTH;
+                    gbc_kickUserBtn.gridy = row + OFFSET;
+                    gbc_kickUserBtn.gridwidth = KICK_BTN_WIDTH;
+                    panel.add(kickUserBtn, gbc_kickUserBtn);
+                }
+
+                // Next location
+                row++;
+            }
+        }
+        this.viewUsersScrollPane.setViewportView(panel);
+    }
 }

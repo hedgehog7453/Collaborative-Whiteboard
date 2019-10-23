@@ -3,6 +3,7 @@ package sharedCode;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Set;
 
 public interface ClientRemoteInterface extends Remote {
 
@@ -12,7 +13,9 @@ public interface ClientRemoteInterface extends Remote {
 
     void displayMsg(String msg) throws RemoteException;
 
-    void displayUserList(ArrayList<String> users) throws RemoteException;
+    void displayUserList(String managerName, Set<String> users) throws RemoteException;
+
+    void setUsername(String username) throws RemoteException;
 
     String getUsername() throws RemoteException;
 }

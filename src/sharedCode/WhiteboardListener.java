@@ -3,10 +3,7 @@ package sharedCode;
 import gui.WhiteboardWindow;
 import server.ServerRemoteInterface;
 
-import javax.print.DocFlavor;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -17,9 +14,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Set;
 
-public class DrawListener extends Component
+public class WhiteboardListener extends Component
         implements ActionListener, MouseListener, MouseMotionListener {
 
     private final ClientRemoteInterface client;
@@ -34,18 +31,17 @@ public class DrawListener extends Component
     private int fontSize = 12;
     private Shape shape;
     private String defaultPath = "/Users/jiayuli/Desktop/";
-    private JTextArea chatInput;
-    private JTextPane chatOutput;
-    private JScrollPane userTab;
+
     private WhiteboardWindow window;
 
 
-    public DrawListener(ServerRemoteInterface server, ClientRemoteInterface client) {
+    public WhiteboardListener(ServerRemoteInterface server, ClientRemoteInterface client) {
         this.server = server;
         this.client = client;
         initToolData();
     }
 
+    // ============================ draw ==============================
     public Graphics2D getG() {
         return g;
     }
@@ -325,72 +321,15 @@ public class DrawListener extends Component
         setG(canvas.getGraphics());
     }
 
-//    public void setChatPanel(JTextArea input, JTextPane output){
-//        this.chatInput = input;
-//        this.chatOutput = output;
-//        System.out.println("set chat panel");
-//    }
 
-    public void broadcastMes(String msg){
+    // ============================ chat ==============================
+
+    public void displayMes(String msg){
         this.window.appendTextToMessages(msg);
-
     }
 
-    public void setUserTab(JScrollPane userTab){
-        this.userTab = userTab;
-    }
-
-
-    public void displayOnlineUsers(ArrayList<String> list, boolean isManager)
-    {
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
-
-        final int GRID_WIDTH = 4;
-        final int USERNAME_WIDTH;
-        if (isManager)
-        {
-            USERNAME_WIDTH = 3;
-        }
-        else
-        {
-            USERNAME_WIDTH = GRID_WIDTH;
-        }
-        final int KICK_BTN_WIDTH = 1;
-        final int OFFSET = 1;
-        JLabel myNameLabel = new JLabel("Your username: " + "me");
-        GridBagConstraints gbc_myNameLabel = new GridBagConstraints();
-        gbc_myNameLabel.gridx = 0;
-        gbc_myNameLabel.gridy = 0;
-        gbc_myNameLabel.gridwidth = GRID_WIDTH;
-        gbc_myNameLabel.insets = new Insets(20, 20, 20, 20);
-        panel.add(myNameLabel, gbc_myNameLabel);
-
-        int row = 0;
-        for (String username : list)
-        {
-            JLabel usernameLabel = new JLabel(username);
-            GridBagConstraints gbc_usernameLabel = new GridBagConstraints();
-            gbc_usernameLabel.gridx = 0;
-            gbc_usernameLabel.gridy = row + OFFSET;
-            gbc_usernameLabel.gridwidth = USERNAME_WIDTH;
-            gbc_usernameLabel.insets = new Insets(6, 6, 6, 6);
-            panel.add(usernameLabel, gbc_usernameLabel);
-
-            if (isManager)
-            {
-                JButton kickUserBtn = new JButton("kick");
-                GridBagConstraints gbc_kickUserBtn = new GridBagConstraints();
-                gbc_kickUserBtn.gridx = USERNAME_WIDTH;
-                gbc_kickUserBtn.gridy = row + OFFSET;
-                gbc_kickUserBtn.gridwidth = KICK_BTN_WIDTH;
-                panel.add(kickUserBtn, gbc_kickUserBtn);
-            }
-
-            // Next location
-            row++;
-        }
-        this.userTab.setViewportView(panel);
+    public void updateOnlineUsers(String managerName, Set<String> usernames) {
+        this.window.displayOnlineUsers(managerName, usernames);
     }
 
     public void paint(Shape shape) {
@@ -464,5 +403,14 @@ public class DrawListener extends Component
 //            System.out.println("");
 //        }
 //    }
+
+    public String getUsername() {
+        try {
+            return client.getUsername();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }
 

@@ -24,7 +24,6 @@ public class ManagerWhiteboard {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-
         // Initialise app
         Whiteboard wb = new Whiteboard();
         wb.initialiseApp(true);
