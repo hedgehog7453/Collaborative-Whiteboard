@@ -381,7 +381,6 @@ public class WhiteboardWindow extends JFrame{
     private void initialiseCanvas() {
         canvasPanel = new JPanel();
         frame.getContentPane().add(canvasPanel);
-//		canvasPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         canvasPanel.setPreferredSize(new Dimension(CANVAS_WIDTH, MAIN_PANEL_HEIGHT));
         canvasPanel.setMinimumSize(new Dimension(CANVAS_WIDTH, MAIN_PANEL_HEIGHT));
         canvasPanel.setBackground(Color.WHITE);
@@ -447,9 +446,7 @@ public class WhiteboardWindow extends JFrame{
 //        viewUsersScrollPane.getViewport().addChangeListener(dl);
         frame.getContentPane().add(communicationTabbedPane);
     }
-    /**
-     * Set all GUI components to connected states
-     */
+
     public void setGuiToConnected() {
         if (wl.getIsManager()) { // connected manager
             mntmNew.setEnabled(true);
@@ -485,9 +482,6 @@ public class WhiteboardWindow extends JFrame{
         btnPost.setEnabled(true);
     }
 
-    /**
-     * Set all GUI components to disconnected states
-     */
     public void setGuiToDisconnected() {
         if (wl.getIsManager()) // disconnected manager
         {
@@ -611,4 +605,5 @@ public class WhiteboardWindow extends JFrame{
         }
         this.viewUsersScrollPane.setViewportView(panel);
     }
+
 }

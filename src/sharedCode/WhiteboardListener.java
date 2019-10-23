@@ -230,6 +230,11 @@ public class WhiteboardListener extends Component
     }
 
     // ============================ draw ==============================
+
+    public void drawAllShapes(ArrayList<Shape> allShapes) {
+        // TODO: 清空canvas然后重新画一遍所有shapes
+    }
+
     public Graphics2D getG() {
         return g;
     }
@@ -421,13 +426,13 @@ public class WhiteboardListener extends Component
     // 重写panel的paint方法，让repaint能够调用
     public void paint(Graphics g, ArrayList<Shape> array) {
         super.paint(g);
-                for (Shape a: array) {
-                    if(a != null) {
-                        a.drawshape((Graphics2D) g);
-                    } else {
-                        break;
-                    }
-                }
+        for (Shape a: array) {
+            if(a != null) {
+                a.drawshape((Graphics2D) g);
+            } else {
+                break;
+            }
+        }
     }
 
     public void paint(Shape shape) {
@@ -487,7 +492,7 @@ public class WhiteboardListener extends Component
         return null;
     }
 
-    public ArrayList<Shape> getAllShape() {
+    public ArrayList<Shape> getAllShapes() {
         try {
             return server.getAllShapes();
         } catch (RemoteException e) {
