@@ -99,7 +99,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     @Override
     public boolean removeAllUsers() throws RemoteException{
         for (ClientRemoteInterface client : users.values()) {
-            client.forceQuit("Manager has left the room. You are forced to quit.");
+            client.forceQuit("Manager has left the room. ");
         }
         return true;
     }

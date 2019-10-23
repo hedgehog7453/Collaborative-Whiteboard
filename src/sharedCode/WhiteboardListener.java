@@ -102,6 +102,7 @@ public class WhiteboardListener extends Component
                 JOptionPane.showConfirmDialog(null, "You are now in the room!", "Congratulations", JOptionPane.DEFAULT_OPTION);
             } else {
                 JOptionPane.showConfirmDialog(null, "You are rejected by the manager.", "Oh no :(", JOptionPane.DEFAULT_OPTION);
+                System.exit(0);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -221,7 +222,6 @@ public class WhiteboardListener extends Component
                 } catch (Exception e){
                 }
             }
-
         } else {
             try {
                 FileOutputStream fis = new FileOutputStream(path);
@@ -350,9 +350,15 @@ public class WhiteboardListener extends Component
 //                System.out.println("click save as");
                 break;
             case "Close":
-                confirmDisconnection();
-                disconnectFromServer();
-                System.exit(0);
+                if (!confirmDisconnection()) {
+                    break;
+                } else {
+                    if (!disconnectFromServer()) {
+                        break;
+                    } else {
+                        System.exit(0);
+                    }
+                }
                 break;
             default:
                 System.out.println(cmd + " clicked");
