@@ -5,6 +5,7 @@ import sharedCode.Shape;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Array;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,10 +18,9 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     String managerName;
     ClientRemoteInterface manager;
     HashMap<String, ClientRemoteInterface> users;
-
+    ArrayList<String> pendingUsers;
     // draw
     ArrayList<sharedCode.Shape> shapeArrayList = new ArrayList<>();
-
     // chat
     ArrayList<String> messages;
 
@@ -28,6 +28,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     public ServerRemoteImpl() throws RemoteException {
         managerName = "";
         users = new HashMap<String, ClientRemoteInterface>();
+        pendingUsers = new ArrayList<String>();
         messages = new ArrayList<>();
     }
 

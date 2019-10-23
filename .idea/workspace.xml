@@ -3,13 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="2cc4096d-ce47-42ff-a7ec-f06b95a9ad0a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gui/WhiteboardWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gui/WhiteboardWindow.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server/ServerRemoteImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/ServerRemoteImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server/ServerRemoteInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/ServerRemoteInterface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sharedCode/ClientRemoteImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/ClientRemoteImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sharedCode/ClientRemoteInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/ClientRemoteInterface.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/sharedCode/Whiteboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/Whiteboard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sharedCode/WhiteboardListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sharedCode/WhiteboardListener.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
