@@ -24,7 +24,9 @@ public class Whiteboard {
         // RMI
         try {
             // find server
+
             server = (ServerRemoteInterface) Naming.lookup("rmi://localhost:8081/server");
+
 
             // Client
             client = new ClientRemoteImpl();

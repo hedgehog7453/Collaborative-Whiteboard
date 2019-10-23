@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Set;
 
 public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemoteInterface {
 
@@ -35,9 +34,9 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
 
     @Override
     public void drawAllShapes() throws RemoteException {
-
+        ArrayList<Shape> allShapes = wbl.getAllShapes();
+        wbl.drawAllShapes(allShapes);
     }
-
 
     @Override
     public void forceQuit(String message) throws RemoteException {
