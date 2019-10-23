@@ -12,11 +12,12 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
 
     private String username;
     private boolean isManager;
-    private boolean isConnected;
 
     public ClientRemoteImpl() throws RemoteException {
     }
 
+    // Connection & Disconnection
+    @Override
     public boolean getApproval(String username) throws RemoteException {
         //System.out.println(username);
         int input = JOptionPane.showConfirmDialog(null,
@@ -26,27 +27,46 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
         return input==0?true:false;
     }
 
-    public void drawNewShape(Shape shape) {
-        wbl.paint(shape);
+    @Override
+    public void displayAllMessages() throws RemoteException {
+        ArrayList<String> allMessages = wbl.getAllMessages();
+        wbl.displayAllMessages(allMessages);
     }
 
     @Override
-    public void displayMsg(String msg) throws RemoteException {
-        System.out.println("server call back to display message");
-        wbl.displayMes(msg);
+    public void drawAllShapes() throws RemoteException {
+
     }
 
-    @Override
-    public void displayUserList(String managerName, ArrayList<String> users) throws RemoteException {
-        System.out.println("server call back to display user list");
-        wbl.updateOnlineUsers(managerName, users);
-    }
 
     @Override
     public void forceQuit(String message) throws RemoteException {
         wbl.forceQuit(message);
     }
 
+    // Users
+    @Override
+    public void displayUserList(String managerName, ArrayList<String> users) throws RemoteException {
+        System.out.println("server call back to display user list");
+        wbl.updateOnlineUsers(managerName, users);
+    }
+
+    // Draw
+    public void drawNewShape(Shape shape) {
+        wbl.paint(shape);
+    }
+
+    // Chat
+    @Override
+    public void displayMsg(String msg) throws RemoteException {
+        System.out.println("server call back to display message");
+        wbl.displayMes(msg);
+    }
+
+
+
+
+    // Accessors & Mutators
     @Override
     public void setWhiteboardListener(WhiteboardListener wbl) throws RemoteException {
         this.wbl = wbl;
@@ -58,11 +78,6 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
     }
 
     @Override
-    public void setIsConnected(boolean isConnected) throws RemoteException {
-        this.isConnected = isConnected;
-    }
-
-    @Override
     public void setUsername(String username) throws RemoteException {
         System.out.println("set user name as " + username);
         this.username = username;
@@ -71,11 +86,6 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
     @Override
     public boolean getIsManager() throws RemoteException {
         return isManager;
-    }
-
-    @Override
-    public boolean getIsConnected() throws RemoteException {
-        return isConnected;
     }
 
     @Override

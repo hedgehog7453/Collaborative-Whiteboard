@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Set;
 
 public class WhiteboardWindow extends JFrame{
 
@@ -124,15 +123,9 @@ public class WhiteboardWindow extends JFrame{
         mntmConnect = new JMenuItem("Connect");
         mntmConnect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (wl.getIsConnected()) {
-                    JOptionPane.showMessageDialog(null, "You are already connected. \nDraw something or say hi in the chat window!");
-                } else {
-                    boolean status = wl.connectToServer();
-                    if (status) {
-                        setGuiToConnected();
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Connection failed.");
-                    }
+                boolean status = wl.connectToServer(false);
+                if (status) {
+                    setGuiToConnected();
                 }
             }
         });
@@ -143,18 +136,14 @@ public class WhiteboardWindow extends JFrame{
         mntmDisconnect.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!wl.getIsConnected()){
-                    JOptionPane.showMessageDialog(null,"You are currently not connected to any room.");
-                } else {
-                    boolean confirm = wl.confirmDisconnection();
-                    if (confirm) {
-                        boolean status = wl.disconnectFromServer();
-                        if (!status) {
-                            JOptionPane.showMessageDialog(null,"Disconnection failed.");
-                        } else {
-                            JOptionPane.showConfirmDialog(null,"You have successfully disconnected from the room.","",JOptionPane.DEFAULT_OPTION);
-                            setGuiToDisconnected();
-                        }
+                boolean confirm = wl.confirmDisconnection();
+                if (confirm) {
+                    boolean status = wl.disconnectFromServer();
+                    if (!status) {
+                        JOptionPane.showMessageDialog(null,"Disconnection failed.");
+                    } else {
+                        JOptionPane.showConfirmDialog(null,"You have successfully disconnected from the room.","",JOptionPane.DEFAULT_OPTION);
+                        setGuiToDisconnected();
                     }
                 }
             }
@@ -462,7 +451,7 @@ public class WhiteboardWindow extends JFrame{
      * Set all GUI components to connected states
      */
     public void setGuiToConnected() {
-        if (wl.getIsConnected()) { // connected manager
+        if (wl.getIsManager()) { // connected manager
             mntmNew.setEnabled(true);
             mntmOpen.setEnabled(true);
             mntmSave.setEnabled(true);
@@ -541,8 +530,9 @@ public class WhiteboardWindow extends JFrame{
     }
 
     public void displayAllMessages(ArrayList<String> messages) {
+        tpUsersMessages.setText("");
         for (String msg : messages) {
-            tpUsersMessages.setText(tpUsersMessages.getText() + "msg" + "\n");
+            tpUsersMessages.setText(tpUsersMessages.getText() + msg + "\n");
         }
     }
 

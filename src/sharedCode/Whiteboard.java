@@ -46,7 +46,7 @@ public class Whiteboard {
             System.exit(0);
         }
 
-        boolean isConnected = wl.connectToServer();
+        boolean isConnected = wl.connectToServer(true);
         if (isConnected) {
             // GUI
             try {

@@ -64,16 +64,8 @@ public class WhiteboardListener extends Component
         return false;
     }
 
-    public boolean getIsConnected() {
-        try {
-            return client.getIsConnected();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
     // =============================== connection ===============================
-    public boolean connectToServer() {
+    public boolean connectToServer(boolean firstConnection) {
         try {
             boolean isManager = client.getIsManager();
             String opTitle = "";
@@ -89,8 +81,12 @@ public class WhiteboardListener extends Component
                 username = JOptionPane.showInputDialog(frame, "Please enter your username: ",
                         opTitle, JOptionPane.QUESTION_MESSAGE);
                 if (username == null) {
-                    System.out.println("Bye");
-                    System.exit(0);
+                    if (firstConnection) {
+                        System.out.println("Bye");
+                        System.exit(0);
+                    } else {
+                        return false;
+                    }
                 }
                 if (username.length() < 4) { // TODO: more validation (no space, etc.)
                     JOptionPane.showConfirmDialog(null, "Please enter a valid username. Your username needs to be longer than 4 letters.", "", JOptionPane.DEFAULT_OPTION);
@@ -112,7 +108,6 @@ public class WhiteboardListener extends Component
         }
         return true;
     }
-
 
     public boolean confirmDisconnection() {
         try {
@@ -147,7 +142,7 @@ public class WhiteboardListener extends Component
                     return removeAll;
                 }
             } else {
-                boolean disconnect = server.clientDisconnect(getUsername(),client);
+                boolean disconnect = server.clientDisconnect(getUsername());
                 return disconnect;
             }
         } catch (Exception e) {
@@ -455,6 +450,10 @@ public class WhiteboardListener extends Component
         this.window.appendTextToMessages(msg);
     }
 
+    public void displayAllMessages(ArrayList<String> allMessages) {
+        window.displayAllMessages(allMessages);
+    }
+
     public void postMessage(String msg) {
         try{
             server.sendMessage(msg, this.client.getUsername());
@@ -478,7 +477,24 @@ public class WhiteboardListener extends Component
 
 
 
+    // Accessors
+    public ArrayList<String> getAllMessages() {
+        try {
+            return server.getAllMessages();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
+    public ArrayList<Shape> getAllShape() {
+        try {
+            return server.getAllShapes();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 
 

@@ -31,6 +31,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         messages = new ArrayList<>();
     }
 
+    // Connection & Disconnection
     public boolean isUsernameUnique(String username) {
         if (managerName.equals(username)) {
             return false;
@@ -44,7 +45,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
             manager = client;
             managerName = username;
             client.setUsername(username);
-            updateAllUserlists();
+            //updateAllUserlists();
             broadcastMessage(username + " just joined the room as manager.");
             return true;
         } else {
@@ -54,6 +55,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
                 client.setUsername(username);
                 updateAllUserlists();
                 broadcastMessage(username + " just joined the room.");
+                client.displayAllMessages();
                 return true;
             }
             return false;
@@ -61,10 +63,29 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     }
 
     @Override
-    public boolean clientDisconnect(String username, ClientRemoteInterface client) throws RemoteException{
+    public boolean clientDisconnect(String username) throws RemoteException{
+        broadcastMessage(username + " left the room.");
+        return removeUser(username);
+    }
+
+    @Override
+    public boolean kickUser(String username) throws RemoteException {
+        ClientRemoteInterface client = users.get(username);
+        System.out.println(client);
+        if (client != null) {
+            client.forceQuit("You are kicked out of the room by the manager.");
+            //System.out.println("forced");
+            broadcastMessage(username + " is kicked by the manager.");
+            removeUser(username);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removeUser(String username) throws RemoteException {
         if(users.containsKey(username)){
             users.remove(username);
-            client.setIsConnected(false);
             updateAllUserlists();
             return true;
         }else{
@@ -79,21 +100,11 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
             client.forceQuit("Manager has left the room. You are forced to quit.");
         }
         return true;
-
     }
 
-    @Override
-    public boolean kickUser(String username) throws RemoteException {
-        ClientRemoteInterface client = users.get(username);
-        System.out.println(client);
-        if (client != null) {
-            client.forceQuit("You are kicked out of the room by the manager.");
-            System.out.println("forced");
-            clientDisconnect(username, client);
-            return true;
-        }
-        return false;
-    }
+
+
+
 
     @Override
     public void updateAllUserlists() throws RemoteException {
@@ -114,6 +125,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         }
     }
 
+    // Draw
     @Override
     public ArrayList<Shape> getWhiteBoard() throws RemoteException {
         //System.out.println("get");
@@ -130,6 +142,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         }
     }
 
+    // Chat
     @Override
     public void sendMessage(String msg, String username) throws RemoteException {
         String thismsg = "";
@@ -159,27 +172,36 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         }
     }
 
-    @Override
-    public String getManagerName() throws RemoteException {
-        return managerName;
-    }
 
+    // Accessors
     @Override
-    public Set<String> getUserList() throws RemoteException {
-        if (users.isEmpty()) {
-            System.out.println("userlist is null");
-            return null;
-        } else {
-            System.out.println("return userlist size: " + users.keySet().size());
-            return users.keySet();
-        }
-    }
-
     public ArrayList<String> getAllMessages() throws RemoteException {
         return messages;
     }
+
+    @Override
+    public ArrayList<Shape> getAllShapes() throws RemoteException {
+        return shapeArrayList;
+    }
+
+
+
 //    @Override
-//    public void editWhiteBoard(ArrayList<sharedCode.Shape> shape) throws RemoteException {
-//        shapeArrayList = shape;
+//    public String getManagerName() throws RemoteException {
+//        return managerName;
 //    }
+//
+//    @Override
+//    public Set<String> getUserList() throws RemoteException {
+//        if (users.isEmpty()) {
+//            System.out.println("userlist is null");
+//            return null;
+//        } else {
+//            System.out.println("return userlist size: " + users.keySet().size());
+//            return users.keySet();
+//        }
+//    }
+
+
+
 }
