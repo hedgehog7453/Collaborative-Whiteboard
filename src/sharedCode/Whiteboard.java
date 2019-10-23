@@ -36,7 +36,7 @@ public class Whiteboard {
             }
             client.setIsManager(isManager);
             wl = new WhiteboardListener(server, client);
-            wbw = new WhiteboardWindow(wl, isManager);
+            wbw = new WhiteboardWindow(wl);
             wl.setWindow(wbw);
             client.setWhiteboardListener(wl);
         } catch (RemoteException | NotBoundException | MalformedURLException e){

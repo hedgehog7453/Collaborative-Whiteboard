@@ -55,6 +55,23 @@ public class WhiteboardListener extends Component
         return "";
     }
 
+    public boolean getIsManager() {
+        try {
+            return client.getIsManager();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean getIsConnected() {
+        try {
+            return client.getIsConnected();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     // =============================== connection ===============================
     public boolean connectToServer() {
         try {
@@ -96,34 +113,47 @@ public class WhiteboardListener extends Component
         return true;
     }
 
+
+    public boolean confirmDisconnection() {
+        try {
+            boolean isManager = client.getIsManager();
+            int answer;
+            if (isManager) {
+                answer = JOptionPane.showConfirmDialog(null,
+                        "Disconnect from the room?\nApplication will be closed, all users will be disconnected from the room, and your work will not be saved.",
+                        "", JOptionPane.YES_NO_OPTION);
+            } else {
+                answer = JOptionPane.showConfirmDialog(null,
+                        "Disconnect from the room?\nYour work will not be saved unless it's saved by other collaborators.",
+                        "",JOptionPane.YES_NO_OPTION);
+            }
+            return (answer==0)?true:false;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public boolean disconnectFromServer() {
         try {
             boolean isManager = client.getIsManager();
             if (isManager) {
-                boolean removeAll =  server.removeAllUsers();
+                boolean removeAll = server.removeAllUsers();
                 if (removeAll){
-                    JOptionPane.showConfirmDialog(null,"Remove all users successfully.","",JOptionPane.DEFAULT_OPTION);
+                    JOptionPane.showConfirmDialog(null,"Disconnection successful.","",JOptionPane.DEFAULT_OPTION);
                     System.exit(0);
                 }else{
-                    JOptionPane.showConfirmDialog(null,"Failed to remove all users.","",JOptionPane.DEFAULT_OPTION);
+                    JOptionPane.showConfirmDialog(null,"Failed to notify all users.","",JOptionPane.DEFAULT_OPTION);
                     return removeAll;
                 }
-
             } else {
                 boolean disconnect = server.clientDisconnect(getUsername(),client);
-//                if (disconnect){
-//                    window.setGuiToDisconnected();
-//                    JOptionPane.showConfirmDialog(null,"Disconnected successfully.","",JOptionPane.DEFAULT_OPTION);
-//                }else{
-//                    JOptionPane.showConfirmDialog(null,"Failed to disconnect.","",JOptionPane.DEFAULT_OPTION);
-//                }
                 return disconnect;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return true;
-
+        return false;
     }
 
     public void forceQuit(String message){
@@ -133,10 +163,6 @@ public class WhiteboardListener extends Component
                 System.exit(0);
             }
         });
-    }
-
-    public void closeWhiteBoard(){
-
     }
 
     // ============================ file ==============================
@@ -268,11 +294,10 @@ public class WhiteboardListener extends Component
 //                System.out.println("click save as");
                 break;
             case "Close":
+                confirmDisconnection();
                 disconnectFromServer();
                 System.exit(0);
                 break;
-            case "Disconnect":
-                disconnectFromServer();
             default:
                 System.out.println(cmd + " clicked");
         }
