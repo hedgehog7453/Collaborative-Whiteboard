@@ -19,6 +19,9 @@ public interface ServerRemoteInterface extends Remote {
 
     ArrayList<Shape> getWhiteBoard() throws RemoteException;
     void addShape(Shape shape) throws RemoteException;
+    void clearAllShapes() throws RemoteException;
+    void updateShapes(ArrayList<Shape> shapes) throws RemoteException;
+    void updateClientCanvas() throws RemoteException;
 
     void sendMessage(String msg, String username) throws RemoteException;
     void broadcastMessage(String msg) throws RemoteException;

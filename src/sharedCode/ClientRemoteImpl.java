@@ -49,6 +49,20 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
         wbl.paint(shape);
     }
 
+    @Override
+    public void updateCanvas() {
+//        wbl.getboardfromServer(200);
+        Thread queryThread = new Thread() {
+            public void run() {
+//                wbl.setCanvas(canvasPanel);
+//                System.out.println("connected");
+                wbl.getboardfromServer(100);
+
+            }
+        };
+        queryThread.start();
+    }
+
     // Chat
     @Override
     public void displayMsg(String msg) throws RemoteException {

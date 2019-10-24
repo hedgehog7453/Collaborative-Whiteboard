@@ -4,6 +4,7 @@ import sharedCode.ClientRemoteInterface;
 import sharedCode.Shape;
 
 import java.rmi.RemoteException;
+import java.rmi.server.RMIClassLoader;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Array;
 import java.sql.Timestamp;
@@ -98,7 +99,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
             users.remove(username);
             updateAllUserlists();
             return true;
-        }else{
+        } else {
             System.out.println("user does not exist.");
             return false;
         }
@@ -145,6 +146,27 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         manager.drawNewShape(shape);
         for (ClientRemoteInterface client : users.values()) {
             client.drawNewShape(shape);
+        }
+    }
+
+    @Override
+    public void clearAllShapes() throws RemoteException {
+        System.out.println("remove all shapes");
+        shapeArrayList = new ArrayList<Shape>();
+    }
+
+    @Override
+    public void updateShapes(ArrayList<Shape> shapes) throws RemoteException {
+        this.shapeArrayList = new ArrayList<Shape>(shapes);
+    }
+
+    @Override
+    public void updateClientCanvas() throws RemoteException {
+        manager.updateCanvas();
+        if (!users.isEmpty()) {
+            for (ClientRemoteInterface user : users.values()) {
+                user.updateCanvas();
+            }
         }
     }
 

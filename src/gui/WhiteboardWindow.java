@@ -209,7 +209,7 @@ public class WhiteboardWindow extends JFrame{
         mntmShibaSquad.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ImageIcon icon = new ImageIcon("assets/shiba.png");
+                ImageIcon icon = new ImageIcon("src/assets/shiba.png");
                 JOptionPane.showMessageDialog(null, "Hi, we are Shiba Squad.", "Hello",
                         JOptionPane.INFORMATION_MESSAGE, icon);
             }

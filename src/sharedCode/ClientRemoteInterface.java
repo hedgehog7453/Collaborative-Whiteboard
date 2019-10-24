@@ -14,6 +14,7 @@ public interface ClientRemoteInterface extends Remote {
     void displayUserList(String managerName, ArrayList<String> users) throws RemoteException;
 
     void drawNewShape(Shape shape) throws RemoteException;
+    void updateCanvas() throws RemoteException;
 
     void displayMsg(String msg) throws RemoteException;
 
