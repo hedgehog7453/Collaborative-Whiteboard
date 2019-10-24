@@ -13,11 +13,13 @@ public class ManagerWhiteboard {
 
     public static void main(String[] args) throws RemoteException, NotBoundException, MalformedURLException {
         // RMI
+        String port = args[1];
+        String ip = "localhost";
         ServerRemoteImpl server;
         try {
             server = new ServerRemoteImpl();
-            LocateRegistry.createRegistry(8081);
-            Naming.rebind("rmi://localhost:8081/server", server);
+            LocateRegistry.createRegistry(Integer.parseInt(port));
+            Naming.rebind("rmi://localhost:"+port+"/server", server);
             //System.out.println("Object bound to name");
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -26,7 +28,7 @@ public class ManagerWhiteboard {
         }
         // Initialise app
         Whiteboard wb = new Whiteboard();
-        wb.initialiseApp(true);
+        wb.initialiseApp(true,ip,port);
     }
 
 }

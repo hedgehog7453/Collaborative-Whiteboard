@@ -10,7 +10,9 @@ public class UserWhiteboard {
 
     public static void main(String[] args) throws RemoteException, NotBoundException, MalformedURLException {
         // Initialise app
+        String ip = args[1];
+        String port = args[2];
         Whiteboard wb = new Whiteboard();
-        wb.initialiseApp(false);
+        wb.initialiseApp(false,ip,port);
     }
 }
