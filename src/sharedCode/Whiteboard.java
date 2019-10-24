@@ -42,6 +42,7 @@ public class Whiteboard {
             client.setWhiteboardListener(wl);
         } catch (RemoteException | NotBoundException | MalformedURLException e){
             //TODO
+            JOptionPane.showMessageDialog(null,"The whiteboard room has not been created");
             e.printStackTrace();
             System.out.println("RMI connection failed.");
             System.exit(0);
