@@ -88,6 +88,9 @@ public class WhiteboardWindow extends JFrame{
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                if (!wl.getIsConnected()) {
+                    System.exit(0);
+                }
                 int answer;
                 if (wl.getIsManager()) {
                     answer = JOptionPane.showConfirmDialog(frame,

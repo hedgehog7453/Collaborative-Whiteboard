@@ -550,6 +550,15 @@ public class WhiteboardListener extends Component
         return false;
     }
 
+    public boolean getIsConnected() {
+        try {
+            return server.getIsConnected(client.getUsername());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public ArrayList<String> getAllMessages() {
         try {
             return server.getAllMessages();

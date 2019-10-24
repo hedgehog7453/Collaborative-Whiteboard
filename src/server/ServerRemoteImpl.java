@@ -170,6 +170,17 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         }
     }
 
+    @Override
+    public boolean getIsConnected(String username) throws RemoteException {
+        if (managerName.equals(username)) {
+            return true;
+        }
+        if (!users.isEmpty()) {
+            return users.keySet().contains(username);
+        }
+        return false;
+    }
+
     // Chat
     @Override
     public void sendMessage(String msg, String username) throws RemoteException {

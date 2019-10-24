@@ -16,6 +16,7 @@ public interface ServerRemoteInterface extends Remote {
     boolean removeUser(String username) throws RemoteException;
     boolean removeAllUsers() throws RemoteException;
     void updateAllUserlists() throws RemoteException;
+    boolean getIsConnected(String username) throws RemoteException;
 
     ArrayList<Shape> getWhiteBoard() throws RemoteException;
     void addShape(Shape shape) throws RemoteException;
