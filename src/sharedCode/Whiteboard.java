@@ -29,7 +29,7 @@ public class Whiteboard {
             // Client
             client = new ClientRemoteImpl();
             if (isManager) {
-                Naming.rebind("rmi://"+ip+":"+user_port+"/client", client);
+                Naming.rebind("rmi://"+ip+":"+port+"/client", client);
             } else {
                 // Allows only one user on manager's machine to join
                 LocateRegistry.createRegistry(Integer.parseInt(user_port));
@@ -52,7 +52,12 @@ public class Whiteboard {
             // GUI
             try {
                 wbw.showWindow();
-                wl.getboardfromServer(200);
+                Thread queryThread = new Thread() {
+                    public void run() {
+                        wl.getboardfromServer(200);
+                    }
+                };
+                queryThread.start();
 //                client.drawAllShapes();
 //                wl.drawAllShapes(server.getWhiteBoard());
             } catch (Exception e) {
