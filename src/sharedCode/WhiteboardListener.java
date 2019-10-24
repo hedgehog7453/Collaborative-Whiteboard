@@ -385,13 +385,19 @@ public class WhiteboardListener extends Component
         g.setFont(new Font("Arial", Font.PLAIN, font));
     }
 
+    public void editUserDrawStatus(ArrayList<String> users) {
+        window.setDrawStatusText(users);
+    }
+
     public void mousePressed(MouseEvent e) {
         x1 = e.getX();
         y1 = e.getY();
-        //g.setColor(color);
+        try {
+            server.addEditingUser(client.getUsername());
+        } catch (RemoteException e1) {
+            e1.printStackTrace();
+        }
     }
-
-
 
     /**
      * Execute this method when you have a mouse button release on the event source object
@@ -422,6 +428,7 @@ public class WhiteboardListener extends Component
                         }
                         break;
                 }
+                server.removeEditingUser(client.getUsername());
             }
         } catch (RemoteException e1) {
             e1.printStackTrace();
@@ -448,18 +455,13 @@ public class WhiteboardListener extends Component
                     x1 = x2;
                     y1 = y2;
                 }
+                server.addEditingUser(client.getUsername());
             }
-
         } catch (RemoteException e1) {
             e1.printStackTrace();
         }
 
     }
-
-    /**
-     * Perform this method when the mouse moves the mouse over the form
-     */
-    public void mouseMoved(MouseEvent e) {}
 
     /**
      * Execute this method when you make a mouse click on the event source object
@@ -471,18 +473,24 @@ public class WhiteboardListener extends Component
         try {
             if (!isDisconnect){
                 if (tool.equals("TEXT")) {
-                String input;
-                input = JOptionPane.showInputDialog(
-                        "Please input the text you want!");
-                if (input != null) {
-                    shape = new Shape(tool,color,x1, y1, x2, y2, input, stroke, fontSize);
-                    server.addShape(shape);
-                }
-            }}
+                    String input;
+                    input = JOptionPane.showInputDialog(
+                            "Please input the text you want!");
+                    if (input != null) {
+                        shape = new Shape(tool,color,x1, y1, x2, y2, input, stroke, fontSize);
+                        server.addShape(shape);
+                    }
+                }}
         } catch (RemoteException e1) {
             e1.printStackTrace();
         }
     }
+
+    /**
+     * Perform this method when the mouse moves the mouse over the form
+     */
+    public void mouseMoved(MouseEvent e) {}
+
 
     public void mouseEntered(MouseEvent e) {
     }

@@ -63,6 +63,11 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
         queryThread.start();
     }
 
+    @Override
+    public void updateUserDrawStatus(ArrayList<String> usernames) throws RemoteException {
+        wbl.editUserDrawStatus(usernames);
+    }
+
     // Chat
     @Override
     public void displayMsg(String msg) throws RemoteException {

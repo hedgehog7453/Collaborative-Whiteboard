@@ -19,12 +19,11 @@ public class WhiteboardWindow extends JFrame{
     public final int TOOL_WIDTH = 150;
     public final int TOOL_TOGGLE_DIMENSION = 45;
     public final int CANVAS_WIDTH = 690;
-    public final int CANVAS_HEIGHT = 720;
     public final int CHAT_WIDTH = 250;
     public final int MESSAGE_HEIGHT = 601;
     public final int INPUT_HEIGHT = 100;
     public final int NUM_OF_TOOLS = 7;
-    public final int NUM_OF_COLOUR_BTNS = 16;
+    public final int MAX_DRAW_STATUS_CHAR = 120;
 
     // Main frame
     private JFrame frame;
@@ -46,6 +45,7 @@ public class WhiteboardWindow extends JFrame{
 
     // Canvas
     private JPanel canvasPanel;
+    private JLabel drawStatusLabel;
 
     // Chat
     private JTabbedPane communicationTabbedPane;
@@ -438,13 +438,30 @@ public class WhiteboardWindow extends JFrame{
     }
 
     private void initialiseCanvas() {
+        JPanel drawPanel = new JPanel();
+        drawPanel.setLayout(new GridBagLayout());
+
         canvasPanel = new JPanel();
-        frame.getContentPane().add(canvasPanel);
-        canvasPanel.setPreferredSize(new Dimension(CANVAS_WIDTH, MAIN_PANEL_HEIGHT));
-        canvasPanel.setMinimumSize(new Dimension(CANVAS_WIDTH, MAIN_PANEL_HEIGHT));
+        canvasPanel.setPreferredSize(new Dimension(CANVAS_WIDTH, MAIN_PANEL_HEIGHT-10));
+        canvasPanel.setMinimumSize(new Dimension(CANVAS_WIDTH, MAIN_PANEL_HEIGHT-10));
         canvasPanel.setBackground(Color.WHITE);
         canvasPanel.addMouseListener(wl);
         canvasPanel.addMouseMotionListener(wl);
+        GridBagConstraints gbc_canvas = new GridBagConstraints();
+        gbc_canvas.gridx = 0;
+        gbc_canvas.gridy = 0;
+        drawPanel.add(canvasPanel, gbc_canvas);
+
+        drawStatusLabel = new JLabel(" ");
+        drawStatusLabel.setMinimumSize(new Dimension(CANVAS_WIDTH, 20));
+        drawStatusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        GridBagConstraints gbc_label = new GridBagConstraints();
+        gbc_label.insets = new Insets(10, 0, 10, 10);
+        gbc_label.gridx = 0;
+        gbc_label.gridy = 1;
+        drawPanel.add(drawStatusLabel, gbc_label);
+
+        frame.getContentPane().add(drawPanel);
     }
 
     private void initialiseChatPanel() {
@@ -577,6 +594,29 @@ public class WhiteboardWindow extends JFrame{
         communicationTabbedPane.setEnabledAt(1, false);
         taInputMessage.setEnabled(false);
         btnPost.setEnabled(false);
+    }
+
+    public void setDrawStatusText(ArrayList<String> usernames) {
+        if (usernames.size() == 0) {
+            drawStatusLabel.setText(" ");
+            return;
+        }
+        if (usernames.size() == 1) {
+            drawStatusLabel.setText(usernames.get(0) + " is drawing.");
+            return;
+        }
+        String suffix = " are drawing.";
+        String text = "";
+        for (int i=0; i<usernames.size(); i++) {
+            if (i == 0) {
+                text += usernames.get(i);
+            }
+            if (i == usernames.size() - 1) {
+                text += " and " + usernames.get(i);
+            } else {
+                text += ", " + usernames.get(i);
+            }
+        }
     }
 
     public void appendTextToMessages(String newText) {

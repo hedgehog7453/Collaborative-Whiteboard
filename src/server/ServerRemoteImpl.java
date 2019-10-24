@@ -4,14 +4,11 @@ import sharedCode.ClientRemoteInterface;
 import sharedCode.Shape;
 
 import java.rmi.RemoteException;
-import java.rmi.server.RMIClassLoader;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.Array;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
 public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemoteInterface {
 
@@ -20,6 +17,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     ClientRemoteInterface manager;
     HashMap<String, ClientRemoteInterface> users;
     ArrayList<String> pendingUsers;
+    ArrayList<String> editingUsers;
     // draw
     ArrayList<sharedCode.Shape> shapeArrayList;
     // chat
@@ -30,11 +28,13 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         managerName = "";
         users = new HashMap<String, ClientRemoteInterface>();
         pendingUsers = new ArrayList<String>();
+        editingUsers = new ArrayList<String>();
         messages = new ArrayList<>();
         shapeArrayList = new ArrayList<>();
     }
 
     // Connection & Disconnection
+    @Override
     public boolean isUsernameUnique(String username) {
         if (managerName.equals(username)) {
             return false;
@@ -43,6 +43,17 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
             System.out.println("Adding user " + username + " to pending user list");
             pendingUsers.add(username);
             return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean getIsConnected(String username) throws RemoteException {
+        if (managerName.equals(username)) {
+            return true;
+        }
+        if (!users.isEmpty()) {
+            return users.keySet().contains(username);
         }
         return false;
     }
@@ -171,14 +182,29 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     }
 
     @Override
-    public boolean getIsConnected(String username) throws RemoteException {
-        if (managerName.equals(username)) {
-            return true;
+    public void addEditingUser(String username) throws RemoteException {
+        if (!editingUsers.contains(username)) {
+            editingUsers.add(username);
+            manager.updateUserDrawStatus(editingUsers);
+            if (!users.isEmpty()) {
+                for (ClientRemoteInterface user : users.values()) {
+                    user.updateUserDrawStatus(editingUsers);
+                }
+            }
         }
-        if (!users.isEmpty()) {
-            return users.keySet().contains(username);
+    }
+
+    @Override
+    public void removeEditingUser(String username) throws RemoteException {
+        if (editingUsers.contains(username)) {
+            editingUsers.remove(username);
+            manager.updateUserDrawStatus(editingUsers);
+            if (!users.isEmpty()) {
+                for (ClientRemoteInterface user : users.values()) {
+                    user.updateUserDrawStatus(editingUsers);
+                }
+            }
         }
-        return false;
     }
 
     // Chat
