@@ -398,7 +398,7 @@ public class WhiteboardListener extends Component
     public void getboardfromServer(int millis){
         try{
             Thread thread = new MyThread();
-            Thread.currentThread().sleep(millis);//毫秒
+            Thread.currentThread().sleep(1000);//毫秒
             thread.start();
         } catch (InterruptedException e){
             System.out.println("failed to get board from server");
