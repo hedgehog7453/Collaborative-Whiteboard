@@ -3,6 +3,7 @@ package sharedCode;
 import gui.WhiteboardWindow;
 import server.ServerRemoteInterface;
 
+import javax.imageio.ImageIO;
 import javax.sound.midi.SysexMessage;
 import javax.swing.*;
 
@@ -615,7 +616,6 @@ public class WhiteboardListener extends Component
                 "RED", "BLUE", "GREEN", "YELLOW", "ORANGE", "LIGHTBLUE",
                 "LIGHTGREEN", "PURPLE", "PINK", "CYAN", "TAN", "BROWN",
                 "BLACK", "DARKGREY", "LIGHTGREY", "WHITE"));
-
         colourData = new HashMap<String, Color>();
         colourData.put("RED", Color.RED);
         colourData.put("BLUE", Color.BLUE);

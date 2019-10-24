@@ -2,9 +2,11 @@ package gui;
 
 import sharedCode.WhiteboardListener;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class WhiteboardWindow extends JFrame{
@@ -14,13 +16,15 @@ public class WhiteboardWindow extends JFrame{
     private final int WINDOW_POS_Y = 50;
     public final int MAIN_PANEL_WIDTH = 1100;
     public final int MAIN_PANEL_HEIGHT = 700;
-    public final int TOOL_WIDTH = 160;
+    public final int TOOL_WIDTH = 150;
     public final int TOOL_TOGGLE_DIMENSION = 45;
     public final int CANVAS_WIDTH = 690;
     public final int CANVAS_HEIGHT = 720;
-    public final int CHAT_WIDTH = 240;
+    public final int CHAT_WIDTH = 250;
     public final int MESSAGE_HEIGHT = 601;
     public final int INPUT_HEIGHT = 100;
+    public final int NUM_OF_TOOLS = 7;
+    public final int NUM_OF_COLOUR_BTNS = 16;
 
     // Main frame
     private JFrame frame;
@@ -234,32 +238,29 @@ public class WhiteboardWindow extends JFrame{
         toolPanel.add(lblpt, gbc_lblpt);
         // toggle buttons
         paintTools = new ArrayList<JToggleButton>();
-        paintTools.add(new JToggleButton("Brus"));
-        paintTools.add(new JToggleButton("Eras"));
-        paintTools.add(new JToggleButton("Line"));
-        paintTools.add(new JToggleButton("Circ"));
-        paintTools.add(new JToggleButton("Rect"));
-        paintTools.add(new JToggleButton("Oval"));
-        paintTools.add(new JToggleButton("Text"));
-        //paintTools.add(new JToggleButton("Size"));
-        int col = 0; int row = 0; int index = 0;
-        for (JToggleButton tb : paintTools)
+        int col = 0; int row = 0;
+        for (int index = 0; index<NUM_OF_TOOLS; index++)
         {
+            JToggleButton tb = new JToggleButton();
+            paintTools.add(tb);
             String cmd = wl.getPaintToolStr(index);
-            if (cmd == "BRUSH") tb.setSelected(true);
+            if (cmd == "BRUSH") tb.setSelected(true); // default tool
             tb.setActionCommand(cmd);
             tb.setPreferredSize(new Dimension(TOOL_TOGGLE_DIMENSION, TOOL_TOGGLE_DIMENSION));
             tb.setFont(new Font("Arial", Font.PLAIN, 10));
+            try {
+                ImageIcon icon = new ImageIcon(ImageIO.read(getClass().getResource("/assets/tools/" + cmd + ".png")));
+                tb.setIcon(icon);
+            } catch (Exception e) {
+                tb.setText(cmd.substring(0, 4));
+            }
             // Set GridBagConstraints
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.gridx = col % TOOL_GRID_WIDTH;
             gbc.gridy = row + TOOL_BLOCK_1_OFFSET;
-            if (col % TOOL_GRID_WIDTH == 0)
-            {
+            if (col % TOOL_GRID_WIDTH == 0) {
                 gbc.insets = new Insets(0, 0, 6, 6);
-            }
-            else
-            {
+            } else {
                 gbc.insets = new Insets(0, 0, 6, 0);
             }
             toolPanel.add(tb, gbc);
@@ -276,13 +277,12 @@ public class WhiteboardWindow extends JFrame{
                 }
             });
             // Next location
-            index++;
             col++;
             if (col % TOOL_GRID_WIDTH == 0) row++;
         }
 
         // ---------------- Size ----------------
-        sizeBtn = new JButton("Size");
+        sizeBtn = new JButton();
         sizeBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JPanel sizePanel = new JPanel();
@@ -308,12 +308,16 @@ public class WhiteboardWindow extends JFrame{
                 if(result == JOptionPane.OK_OPTION) {
                     wl.sizeBtnClicked(strokeSlider.getValue(), fontSlider.getValue());
                 }
-
-
             }
         });
         sizeBtn.setPreferredSize(new Dimension(TOOL_TOGGLE_DIMENSION, TOOL_TOGGLE_DIMENSION));
         sizeBtn.setFont(new Font("Arial", Font.PLAIN, 10));
+        try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(getClass().getResource("/assets/tools/SIZE.png")));
+            sizeBtn.setIcon(icon);
+        } catch (Exception e) {
+            sizeBtn.setText("SIZE");
+        }
         GridBagConstraints gbc1 = new GridBagConstraints();
         gbc1.gridx = col % TOOL_GRID_WIDTH;
         gbc1.gridy = row + TOOL_BLOCK_1_OFFSET;
@@ -356,7 +360,7 @@ public class WhiteboardWindow extends JFrame{
         colours.add(new JToggleButton("DkGy"));
         colours.add(new JToggleButton("LtGy"));
         colours.add(new JToggleButton("Whit"));
-        col = 0; row = 0; index = 0;
+        col = 0; row = 0; int index = 0;
         for (JToggleButton tb : colours)
         {
             String cmd = wl.getColourStr(index);
@@ -397,9 +401,8 @@ public class WhiteboardWindow extends JFrame{
             if (col % TOOL_GRID_WIDTH == 0) row++;
         }
 
-
         // ---------------- Palette ----------------
-        paletteBtn = new JButton("Palette");
+        paletteBtn = new JButton();
         paletteBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Color color = JColorChooser.showDialog(toolPanel, "Color Palette", Color.black);
@@ -411,6 +414,12 @@ public class WhiteboardWindow extends JFrame{
         });
         paletteBtn.setPreferredSize(new Dimension(TOOL_TOGGLE_DIMENSION, TOOL_TOGGLE_DIMENSION));
         paletteBtn.setFont(new Font("Arial", Font.PLAIN, 10));
+        try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(getClass().getResource("/assets/palette.png")));
+            paletteBtn.setIcon(icon);
+        } catch (Exception e) {
+            paletteBtn.setText("Palette");
+        }
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = col % TOOL_GRID_WIDTH;
         gbc.gridy = row + TOOL_BLOCK_2_OFFSET + 1;
