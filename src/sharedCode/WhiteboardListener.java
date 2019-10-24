@@ -45,33 +45,6 @@ public class WhiteboardListener extends Component
 
     }
 
-    public boolean getReconnect(){
-        return reconnect;
-    }
-
-    public void setWindow(WhiteboardWindow win){
-        this.window = win;
-
-    }
-
-    public String getUsername() {
-        try {
-            return client.getUsername();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    public boolean getIsManager() {
-        try {
-            return client.getIsManager();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     // =============================== connection ===============================
     public boolean connectToServer(boolean firstConnection) {
         try {
@@ -253,6 +226,30 @@ public class WhiteboardListener extends Component
 
     // ============================ draw ==============================
 
+    public void getboardfromServer(int millis){
+        try{
+            Thread thread = new MyThread();
+            Thread.currentThread().sleep(millis);//毫秒
+            thread.start();
+            Thread.currentThread().sleep(20);//毫秒
+
+        } catch (InterruptedException e){
+            System.out.println("failed to get board from server");
+        }
+
+    }
+
+    class MyThread extends Thread{
+        @Override
+        public void run() {
+            try {
+                drawAllShapes(server.getWhiteBoard());
+            } catch (RemoteException ex) {
+                System.out.println("failed to repaint graph given by server");
+            }
+        }
+    }
+
     public void drawAllShapes(ArrayList<Shape> allShapes) {
         // TODO: 清空canvas然后重新画一遍所有shapes
         if (g == null){
@@ -278,11 +275,11 @@ public class WhiteboardListener extends Component
         }
     }
 
+    // 重绘单个shape
     public void paint(Shape shape) {
         System.out.println("重绘单个shape");
         shape.drawshape(g);
     }
-
 
     public Graphics2D getG() {
         return g;
@@ -407,29 +404,7 @@ public class WhiteboardListener extends Component
         //g.setColor(color);
     }
 
-    public void getboardfromServer(int millis){
-        try{
-            Thread thread = new MyThread();
-            Thread.currentThread().sleep(millis);//毫秒
-            thread.start();
-            Thread.currentThread().sleep(20);//毫秒
 
-        } catch (InterruptedException e){
-            System.out.println("failed to get board from server");
-        }
-
-    }
-
-    class MyThread extends Thread{
-        @Override
-        public void run() {
-            try {
-                drawAllShapes(server.getWhiteBoard());
-            } catch (RemoteException ex) {
-                System.out.println("failed to repaint graph given by server");
-            }
-        }
-    }
 
     /**
      * Execute this method when you have a mouse button release on the event source object
@@ -530,8 +505,6 @@ public class WhiteboardListener extends Component
     }
 
 
-
-
     // ============================ chat ==============================
 
     public void displayMes(String msg){
@@ -563,7 +536,33 @@ public class WhiteboardListener extends Component
 
     }
 
-    // Accessors
+    // Accessors & Mutators
+    public boolean getReconnect(){
+        return reconnect;
+    }
+
+    public void setWindow(WhiteboardWindow win){
+        this.window = win;
+    }
+
+    public String getUsername() {
+        try {
+            return client.getUsername();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public boolean getIsManager() {
+        try {
+            return client.getIsManager();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public ArrayList<String> getAllMessages() {
         try {
             return server.getAllMessages();

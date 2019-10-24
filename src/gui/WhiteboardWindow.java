@@ -138,18 +138,6 @@ public class WhiteboardWindow extends JFrame{
                 };
                 queryThread.start();
             }
-//            public void actionPerformed(ActionEvent e) {
-//                boolean status = wl.connectToServer(false);
-//                if (status) {
-//                    setGuiToConnected();
-//                    wl.setCanvas(canvasPanel);
-////                    wl.getboardfromServer(200);
-//                    if (wl.getReconnect()){
-//                        System.out.println("connected");
-//                        wl.getboardfromServer(100);
-//                    }
-//                }
-//            }
         });
         mnConnection.add(mntmConnect);
 

@@ -24,16 +24,16 @@ public class Whiteboard {
         // RMI
         try {
             // find server
-
             server = (ServerRemoteInterface) Naming.lookup("rmi://localhost:8081/server");
 
             // Client
             client = new ClientRemoteImpl();
-            if (!isManager) {
+            if (isManager) {
+                Naming.rebind("rmi://localhost:8081/client", client);
+            } else {
+                // Allows only one user on manager's machine to join
                 LocateRegistry.createRegistry(8082);
                 Naming.rebind("rmi://localhost:8082/client", client);
-            } else {
-                Naming.rebind("rmi://localhost:8081/client", client);
             }
             client.setIsManager(isManager);
             wl = new WhiteboardListener(server, client);

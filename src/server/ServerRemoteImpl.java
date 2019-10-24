@@ -38,7 +38,12 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         if (managerName.equals(username)) {
             return false;
         }
-        return !users.keySet().contains(username);
+        if (!users.keySet().contains(username) && !pendingUsers.contains(username)) {
+            System.out.println("Adding user " + username + " to pending user list");
+            pendingUsers.add(username);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -53,6 +58,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
         } else {
             boolean managerApproved = manager.getApproval(username);
             if (managerApproved) {
+                pendingUsers.remove(username);
                 users.put(username, client);
                 client.setUsername(username);
                 updateAllUserlists();
@@ -183,25 +189,5 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     public ArrayList<Shape> getAllShapes() throws RemoteException {
         return shapeArrayList;
     }
-
-
-
-//    @Override
-//    public String getManagerName() throws RemoteException {
-//        return managerName;
-//    }
-//
-//    @Override
-//    public Set<String> getUserList() throws RemoteException {
-//        if (users.isEmpty()) {
-//            System.out.println("userlist is null");
-//            return null;
-//        } else {
-//            System.out.println("return userlist size: " + users.keySet().size());
-//            return users.keySet();
-//        }
-//    }
-
-
 
 }
