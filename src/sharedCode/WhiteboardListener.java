@@ -105,7 +105,7 @@ public class WhiteboardListener extends Component
             } else {
                 answer = JOptionPane.showConfirmDialog(null,
                         "Disconnect from the room?\nYour work will not be saved unless it's saved by other collaborators.",
-                        "",JOptionPane.YES_NO_OPTION);
+                        "", JOptionPane.YES_NO_OPTION);
             }
             return (answer==0)?true:false;
         } catch (RemoteException e) {

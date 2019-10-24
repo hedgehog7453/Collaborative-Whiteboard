@@ -84,11 +84,20 @@ public class WhiteboardWindow extends JFrame{
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                int answer = JOptionPane.showConfirmDialog(frame,
-                        "Are you sure you want to close this window? All users will be kicked out of the room.",
-                        "Close Window?",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE);
+                int answer;
+                if (wl.getIsManager()) {
+                    answer = JOptionPane.showConfirmDialog(frame,
+                            "Are you sure you want to close this window? All users will be kicked out of the room.",
+                            "Close Window?",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE);
+                } else {
+                    answer = JOptionPane.showConfirmDialog(frame,
+                            "Are you sure you want to close this window? Your work will not be saved unless it is saved by other collaborators.",
+                            "Close Window?",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE);
+                }
                 if (answer == 0) {
                     if (wl.disconnectFromServer()) {
                         System.exit(0);
