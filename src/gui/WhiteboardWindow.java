@@ -107,7 +107,16 @@ public class WhiteboardWindow extends JFrame{
             @Override
             public void windowDeiconified(WindowEvent e) {
                 System.out.println("Window minimised");
-                wl.getboardfromServer(100);
+//                wl.getboardfromServer(100);
+                Thread queryThread = new Thread() {
+                    public void run() {
+                            wl.setCanvas(canvasPanel);
+                            System.out.println("connected");
+                            wl.getboardfromServer(100);
+
+                    }
+                };
+                queryThread.start();
             }
         });
     }
