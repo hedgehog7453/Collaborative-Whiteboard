@@ -158,6 +158,7 @@ public class WhiteboardListener extends Component
                         }
                         server.clearAllShapes();
                         server.updateClientCanvas();
+                        server.broadcastMessage("Manager cleared the canvas. ");
                     }
                     path = "";
                 } catch (IOException ex) {
@@ -235,6 +236,7 @@ public class WhiteboardListener extends Component
                 // re-paint canvas
                 //paint(g, list);
                 server.updateClientCanvas();
+                server.broadcastMessage("Manager opened the file \"" + file.getName() + "\". ");
                 ois.close();
                 path = file.getPath();
             }
