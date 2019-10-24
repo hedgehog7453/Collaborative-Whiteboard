@@ -20,7 +20,7 @@ public class Whiteboard {
     private WhiteboardWindow wbw;
     private WhiteboardListener wl;
 
-    public void initialiseApp(boolean isManager, String ip, String port) {
+    public void initialiseApp(boolean isManager, String ip, String port, String user_port) {
         // RMI
         try {
             // find server
@@ -29,11 +29,11 @@ public class Whiteboard {
             // Client
             client = new ClientRemoteImpl();
             if (isManager) {
-                Naming.rebind("rmi://"+ip+":"+port+"/client", client);
+                Naming.rebind("rmi://"+ip+":"+user_port+"/client", client);
             } else {
                 // Allows only one user on manager's machine to join
-                LocateRegistry.createRegistry(Integer.parseInt(port));
-                Naming.rebind("rmi://"+ip+":"+port+"/client", client);
+                LocateRegistry.createRegistry(Integer.parseInt(user_port));
+                Naming.rebind("rmi://"+ip+":"+user_port+"/client", client);
             }
             client.setIsManager(isManager);
             wl = new WhiteboardListener(server, client);

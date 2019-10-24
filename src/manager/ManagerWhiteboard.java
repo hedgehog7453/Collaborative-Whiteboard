@@ -28,7 +28,7 @@ public class ManagerWhiteboard {
         }
         // Initialise app
         Whiteboard wb = new Whiteboard();
-        wb.initialiseApp(true,ip,port);
+        wb.initialiseApp(true,ip,port, null);
     }
 
 }
