@@ -4,8 +4,7 @@ import sharedCode.WhiteboardListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 public class WhiteboardWindow extends JFrame{
@@ -79,9 +78,29 @@ public class WhiteboardWindow extends JFrame{
         frame = new JFrame();
         frame.setBounds(WINDOW_POS_X, WINDOW_POS_Y, MAIN_PANEL_WIDTH, MAIN_PANEL_HEIGHT);
         frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.LINE_AXIS));
         frame.setTitle("Whiteboard");
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int answer = JOptionPane.showConfirmDialog(frame,
+                        "Are you sure you want to close this window? All users will be kicked out of the room.",
+                        "Close Window?",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE);
+                if (answer == 0) {
+                    if (wl.disconnectFromServer()) {
+                        System.exit(0);
+                    }
+                }
+            }
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+                System.out.println("Window minimised");
+                wl.getboardfromServer(100);
+            }
+        });
     }
 
     private void initialiseMenu() {
@@ -125,16 +144,16 @@ public class WhiteboardWindow extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 Thread queryThread = new Thread() {
                     public void run() {
-                boolean status = wl.connectToServer(false);
-                if (status) {
-                    setGuiToConnected();
-                    wl.setCanvas(canvasPanel);
-//                    wl.getboardfromServer(200);
-                    if (wl.getReconnect()){
-                        System.out.println("connected");
-                        wl.getboardfromServer(100);
+                        boolean status = wl.connectToServer(false);
+                        if (status) {
+                            setGuiToConnected();
+                            wl.setCanvas(canvasPanel);
+                            if (wl.getReconnect()){
+                                System.out.println("connected");
+                                wl.getboardfromServer(100);
+                            }
+                        }
                     }
-                }                    }
                 };
                 queryThread.start();
             }
