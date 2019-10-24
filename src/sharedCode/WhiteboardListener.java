@@ -33,6 +33,7 @@ public class WhiteboardListener extends Component
     private Shape shape;
     private String path = "";
     private boolean isDisconnect = false;
+    private boolean reconnect = false;
 
     private WhiteboardWindow window;
 
@@ -42,6 +43,10 @@ public class WhiteboardListener extends Component
         this.client = client;
         initToolData();
 
+    }
+
+    public boolean getReconnect(){
+        return reconnect;
     }
 
     public void setWindow(WhiteboardWindow win){
@@ -103,7 +108,10 @@ public class WhiteboardListener extends Component
             boolean status = server.clientConnect(isManager, username, client);
             if (status) {
                 JOptionPane.showConfirmDialog(null, "You are now in the room!", "Congratulations", JOptionPane.DEFAULT_OPTION);
-                this.isDisconnect = false;
+                if (!firstConnection){
+                    this.isDisconnect = false;
+                    this.reconnect = true;
+                }
             } else {
                 JOptionPane.showConfirmDialog(null, "You are rejected by the manager.", "Oh no :(", JOptionPane.DEFAULT_OPTION);
             }
@@ -257,17 +265,21 @@ public class WhiteboardListener extends Component
     // 重写panel的paint方法，让repaint能够调用
     public void paint(Graphics2D g, ArrayList<Shape> array) {
         super.paint(g);
-        for (Shape a: array) {
-            if(a != null) {
+        System.out.println("重绘全部shape" + array.size());
+        if (array.size()>0){
+            for (Shape a: array) {
+                if(a != null) {
 //                System.out.println(a.);
-                a.drawshape(g);
-            } else {
-                break;
+                    a.drawshape(g);
+                } else {
+                    break;
+                }
             }
         }
     }
 
     public void paint(Shape shape) {
+        System.out.println("重绘单个shape");
         shape.drawshape(g);
     }
 
@@ -398,8 +410,10 @@ public class WhiteboardListener extends Component
     public void getboardfromServer(int millis){
         try{
             Thread thread = new MyThread();
-            Thread.currentThread().sleep(1000);//毫秒
+            Thread.currentThread().sleep(millis);//毫秒
             thread.start();
+            Thread.currentThread().sleep(20);//毫秒
+
         } catch (InterruptedException e){
             System.out.println("failed to get board from server");
         }
@@ -412,7 +426,7 @@ public class WhiteboardListener extends Component
             try {
                 drawAllShapes(server.getWhiteBoard());
             } catch (RemoteException ex) {
-                ex.printStackTrace();
+                System.out.println("failed to repaint graph given by server");
             }
         }
     }
@@ -493,7 +507,8 @@ public class WhiteboardListener extends Component
         x1 = e.getX();
         y1 = e.getY();
         try {
-            if (tool.equals("TEXT")) {
+            if (!isDisconnect){
+                if (tool.equals("TEXT")) {
                 String input;
                 input = JOptionPane.showInputDialog(
                         "Please input the text you want!");
@@ -501,7 +516,7 @@ public class WhiteboardListener extends Component
                     shape = new Shape(tool,color,x1, y1, x2, y2, input, stroke, fontSize);
                     server.addShape(shape);
                 }
-            }
+            }}
         } catch (RemoteException e1) {
             e1.printStackTrace();
         }
