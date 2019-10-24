@@ -3,8 +3,6 @@ package sharedCode;
 import gui.WhiteboardWindow;
 import server.ServerRemoteInterface;
 
-import javax.imageio.ImageIO;
-import javax.sound.midi.SysexMessage;
 import javax.swing.*;
 
 import java.awt.*;
@@ -16,7 +14,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Set;
 
 public class WhiteboardListener extends Component
         implements ActionListener, MouseListener, MouseMotionListener {
@@ -43,7 +40,6 @@ public class WhiteboardListener extends Component
         this.server = server;
         this.client = client;
         initToolData();
-
     }
 
     // =============================== connection ===============================
@@ -150,13 +146,73 @@ public class WhiteboardListener extends Component
     }
 
     // ============================ file ==============================
+    public void actionPerformed(ActionEvent e) {
+        String cmd = e.getActionCommand();
+        switch (cmd) {
+            case "New":
+                try {
+                    if (server.getAllShapes().size() != 0) { // if nothing is drawn
+                        boolean save = promptSave();
+                        if (save) {
+                            saveFile(path);
+                        }
+                        server.clearAllShapes();
+                        server.updateClientCanvas();
+                    }
+                    path = "";
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "Open":
+                try {
+                    if (server.getAllShapes().size() == 0){ // if nothing is drawn
+                        openFile();
+                    } else {
+                        boolean save = promptSave();
+                        if (save) {
+                            saveFile(path);
+                        }
+                        openFile();
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "Save":
+                try {
+                    saveFile(path);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "Save as":
+                try {
+                    saveFile("");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "Close":
+                confirmDisconnection();
+                disconnectFromServer();
+                System.exit(0);
+                break;
+            default:
+                System.out.println(cmd + " clicked");
+        }
+    }
+
+    private boolean promptSave() {
+        int value = JOptionPane.showConfirmDialog(null,
+                "Save the current drawing?", "Save? ", 0);
+        if (value == JOptionPane.YES_OPTION) {
+            return true;
+        }
+        return false;
+    }
+
     public void openFile() throws IOException {
-//        int value=JOptionPane.showConfirmDialog(null, "save current work？", "Warning", 0);
-//        if(value==0){
-//            saveFile("");
-//        }
-//        if(value==1){
-        canvas.repaint(); // clear canvas
         try {
             // alert user to choose file
             JFileChooser chooser = new JFileChooser();
@@ -164,9 +220,9 @@ public class WhiteboardListener extends Component
             if (result == JFileChooser.CANCEL_OPTION) {
                 return;
             }
-            File file =chooser.getSelectedFile();
-            if(file==null){
-                JOptionPane.showMessageDialog(null, "Didn't select file");
+            File file = chooser.getSelectedFile();
+            if (file == null) {
+                JOptionPane.showMessageDialog(null, "Please select a file.");
                 path = "";
             }
             else {
@@ -174,16 +230,17 @@ public class WhiteboardListener extends Component
                 FileInputStream fis = new FileInputStream(file);
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 // cast to shape type
-                ArrayList<Shape> list =(ArrayList<Shape>)ois.readObject();
+                //ArrayList<Shape> list = (ArrayList<Shape>)ois.readObject();
+                server.updateShapes((ArrayList<Shape>)ois.readObject());
                 // re-paint canvas
-                paint(g, list);
+                //paint(g, list);
+                server.updateClientCanvas();
                 ois.close();
                 path = file.getPath();
             }
         } catch (Exception e1) {
             e1.printStackTrace();
         }
-//         }
     }
 
     public void saveFile(String path) throws IOException {
@@ -210,7 +267,6 @@ public class WhiteboardListener extends Component
                 } catch (Exception e){
                 }
             }
-
         } else {
             try {
                 FileOutputStream fis = new FileOutputStream(path);
@@ -237,13 +293,13 @@ public class WhiteboardListener extends Component
         } catch (InterruptedException e){
             System.out.println("failed to get board from server");
         }
-
     }
 
     class MyThread extends Thread{
         @Override
         public void run() {
             try {
+                canvas.repaint();
                 drawAllShapes(server.getWhiteBoard());
             } catch (RemoteException ex) {
                 System.out.println("failed to repaint graph given by server");
@@ -263,7 +319,7 @@ public class WhiteboardListener extends Component
     // 重写panel的paint方法，让repaint能够调用
     public void paint(Graphics2D g, ArrayList<Shape> array) {
         super.paint(g);
-        System.out.println("重绘全部shape" + array.size());
+        System.out.println("重绘全部shape " + array.size());
         if (array.size()>0){
             for (Shape a: array) {
                 if(a != null) {
@@ -278,7 +334,6 @@ public class WhiteboardListener extends Component
 
     // 重绘单个shape
     public void paint(Shape shape) {
-        System.out.println("重绘单个shape");
         shape.drawshape(g);
     }
 
@@ -306,75 +361,6 @@ public class WhiteboardListener extends Component
 
     public int getFontSize() {
         return fontSize;
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        String cmd = e.getActionCommand();
-        switch (cmd) {
-            case "New":
-//                System.out.println("click save as");
-                try {
-                    if (server.getAllShapes().size() == 0){
-                        path = "";
-                        canvas.repaint(); // clear canvas
-                    } else {
-                        int value=JOptionPane.showConfirmDialog(null, "save current work？", "Warning", 0);
-                        if (value == 0){
-                            saveFile(path);
-                            path = "";
-                            canvas.repaint(); // clear canvas
-                        } else {
-                            path = "";
-                            canvas.repaint(); // clear canvas
-                        }
-                    }
-                } catch ( IOException ex) {
-                    ex.printStackTrace();
-                }
-                break;
-            case "Open":
-                try {
-                    if (server.getAllShapes().size() == 0){
-                        openFile();
-                    }else {
-                        int value =JOptionPane.showConfirmDialog(null, "save current work？", "Warning", 0);
-                        if (value == 0){
-                            saveFile(path);
-                            openFile();
-                        } else {
-                            openFile();
-                        }
-
-                    }
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                System.out.println("click open");
-                break;
-            case "Save":
-//                System.out.println("click save");
-                try {
-                    saveFile(path);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                break;
-            case "Save as":
-                try {
-                    saveFile("");
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-//                System.out.println("click save as");
-                break;
-            case "Close":
-                confirmDisconnection();
-                disconnectFromServer();
-                System.exit(0);
-                break;
-            default:
-                System.out.println(cmd + " clicked");
-        }
     }
 
     public void toolBtnClicked(String text) {
