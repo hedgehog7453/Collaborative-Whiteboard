@@ -40,7 +40,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
             return false;
         }
         if (!users.keySet().contains(username) && !pendingUsers.contains(username)) {
-            System.out.println("Adding user " + username + " to pending user list");
+            //System.out.println("Adding user " + username + " to pending user list");
             pendingUsers.add(username);
             return true;
         }
@@ -90,7 +90,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     @Override
     public boolean kickUser(String username) throws RemoteException {
         ClientRemoteInterface client = users.get(username);
-        System.out.println(client);
+        //System.out.println(client);
         if (client != null) {
             client.forceQuit("You are kicked out of the room by the manager.");
             //System.out.println("forced");
@@ -108,7 +108,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
             updateAllUserlists();
             return true;
         } else {
-            System.out.println("user does not exist.");
+            //System.out.println("user does not exist.");
             return false;
         }
     }
@@ -124,9 +124,9 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     @Override
     public void updateAllUserlists() throws RemoteException {
         try {
-            System.out.println("update user list");
+            //System.out.println("update user list");
             if (!users.isEmpty()) {
-                System.out.println(users.keySet());
+                //System.out.println(users.keySet());
                 manager.displayUserList(managerName, new ArrayList<String>(users.keySet()));
                 for (ClientRemoteInterface client : users.values()) {
                     client.displayUserList(managerName, new ArrayList<String>(users.keySet()));
@@ -136,7 +136,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
             }
         } catch (Exception e){
             e.printStackTrace();
-            System.out.println("server failed to update user list");
+            //System.out.println("server failed to update user list");
         }
     }
 
@@ -242,7 +242,7 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
             }
         } catch (Exception e){
             e.printStackTrace();
-            System.out.println("server failed to broadcast message");
+            //System.out.println("server failed to broadcast message");
         }
     }
 

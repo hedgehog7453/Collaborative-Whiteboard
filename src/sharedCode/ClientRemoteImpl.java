@@ -40,7 +40,7 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
     // Users
     @Override
     public void displayUserList(String managerName, ArrayList<String> users) throws RemoteException {
-        System.out.println("server call back to display user list");
+        //System.out.println("server call back to display user list");
         wbl.updateOnlineUsers(managerName, users);
     }
 
@@ -67,7 +67,7 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
     // Chat
     @Override
     public void displayMsg(String msg) throws RemoteException {
-        System.out.println("server call back to display message");
+        //System.out.println("server call back to display message");
         wbl.displayMes(msg);
     }
 
@@ -85,7 +85,7 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
 
     @Override
     public void setUsername(String username) throws RemoteException {
-        System.out.println("set user name as " + username);
+        //System.out.println("set user name as " + username);
         this.username = username;
     }
 

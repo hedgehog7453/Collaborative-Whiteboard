@@ -69,30 +69,34 @@ public class WhiteboardListener extends Component
                         opTitle, JOptionPane.QUESTION_MESSAGE);
                 if (username == null) {
                     if (firstConnection) {
-                        System.out.println("Bye");
                         System.exit(0);
                     } else {
                         return false;
                     }
                 }
                 if (username.length() < 4) { // TODO: more validation (no space, etc.)
-                    JOptionPane.showConfirmDialog(null, "Please enter a valid username. Your username needs to be longer than 4 letters.", "", JOptionPane.DEFAULT_OPTION);
+                    JOptionPane.showConfirmDialog(null,
+                            "Username invalid. \nYour username needs to be longer than 4 letters.",
+                            "", JOptionPane.DEFAULT_OPTION);
                     continue;
                 }
                 isUnique = server.isUsernameUnique(username);
                 if (!isUnique) {
-                    JOptionPane.showConfirmDialog(null, "Username already exists. ", "", JOptionPane.DEFAULT_OPTION);
+                    JOptionPane.showConfirmDialog(null, "Username already exists. ",
+                            "", JOptionPane.DEFAULT_OPTION);
                 }
             }
             boolean status = server.clientConnect(isManager, username, client);
             if (status) {
-                JOptionPane.showConfirmDialog(null, "You are now in the room!", "Congratulations", JOptionPane.DEFAULT_OPTION);
+                JOptionPane.showConfirmDialog(null, "You are now in the room!",
+                        "Congratulations", JOptionPane.DEFAULT_OPTION);
                 if (!firstConnection){
                     this.isDisconnect = false;
                     this.reconnect = true;
                 }
             } else {
-                JOptionPane.showConfirmDialog(null, "You are rejected by the manager.", "Oh no :(", JOptionPane.DEFAULT_OPTION);
+                JOptionPane.showConfirmDialog(null, "You are rejected by the manager.",
+                        "Oh no :(", JOptionPane.DEFAULT_OPTION);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -106,7 +110,7 @@ public class WhiteboardListener extends Component
             int answer;
             if (isManager) {
                 answer = JOptionPane.showConfirmDialog(null,
-                        "Disconnect from the room?\nApplication will be closed, all users will be disconnected from the room, and your work will not be saved.",
+                        "Disconnect from the room?\nApplication will be closed, all users will disconnect, and your work will not be saved.",
                         "", JOptionPane.YES_NO_OPTION);
             } else {
                 answer = JOptionPane.showConfirmDialog(null,
@@ -126,10 +130,12 @@ public class WhiteboardListener extends Component
             if (isManager) {
                 boolean removeAll = server.removeAllUsers();
                 if (removeAll){
-                    JOptionPane.showConfirmDialog(null,"Disconnection successful.","",JOptionPane.DEFAULT_OPTION);
+                    JOptionPane.showConfirmDialog(null,"Disconnection successful.",
+                            "",JOptionPane.DEFAULT_OPTION);
                     System.exit(0);
                 }else{
-                    JOptionPane.showConfirmDialog(null,"Failed to notify all users.","",JOptionPane.DEFAULT_OPTION);
+                    JOptionPane.showConfirmDialog(null,"Failed to notify all users.",
+                            "",JOptionPane.DEFAULT_OPTION);
                     return removeAll;
                 }
             } else {
@@ -148,7 +154,7 @@ public class WhiteboardListener extends Component
     public void forceQuit(String message){
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-                JOptionPane.showConfirmDialog(null,message,"",JOptionPane.DEFAULT_OPTION);
+                JOptionPane.showConfirmDialog(null, message,"", JOptionPane.DEFAULT_OPTION);
                 System.exit(0);
             }
         });
@@ -163,7 +169,7 @@ public class WhiteboardListener extends Component
                     if (server.getWhiteBoard().size() != 0) { // if nothing has been drawn
                         boolean save = promptSave();
                         if (save) {
-                            boolean saveSuccess = saveFile(path); // TODO: if save is canceled, abort current operation
+                            boolean saveSuccess = saveFile(path);
                             if (saveSuccess) {
                                 server.clearAllShapes();
                                 //server.updateClientCanvas();
@@ -235,7 +241,6 @@ public class WhiteboardListener extends Component
     }
 
     public void openFile() throws IOException {
-        // TODO: return false if save is canceled
         try {
             // alert user to choose file
             JFileChooser chooser = new JFileChooser();
@@ -313,23 +318,13 @@ public class WhiteboardListener extends Component
 
     // Called by client remote
     public void updateCanvas(int millis, ArrayList<Shape> shapes){
-//        EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                try {
-//                    canvas.repaint();
-//                    drawAllShapes(shapes);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
         try{
             Thread thread = new MyThread();
             Thread.currentThread().sleep(millis);//毫秒
             thread.start();
             Thread.currentThread().sleep(20);//毫秒
         } catch (InterruptedException e){
-            System.out.println("failed to get board from server");
+            //System.out.println("failed to get board from server");
         }
     }
 
@@ -337,7 +332,7 @@ public class WhiteboardListener extends Component
     public void updateCanvasFromServer() {
         synchronized (canvas) {
             try {
-                System.out.println("retrieve canvas from server and show");
+                //System.out.println("retrieve canvas from server and show");
                 updateCanvas(100, server.getWhiteBoard());
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -350,29 +345,27 @@ public class WhiteboardListener extends Component
         public void run() {
             synchronized (canvas) {
                 try {
-                    System.out.println("showing canvas");
+                    //System.out.println("showing canvas");
                     canvas.repaint();
                     drawAllShapes(server.getWhiteBoard());
                 } catch (RemoteException ex) {
-                    System.out.println("failed to repaint graph given by server");
+                    //System.out.println("failed to repaint graph given by server");
                 }
             }
         }
     }
 
     public void drawAllShapes(ArrayList<Shape> allShapes) {
-        // TODO: 清空canvas然后重新画一遍所有shapes
         if (g == null){
-            System.out.println("g doesn't exist");
+            //System.out.println("g doesn't exist");
         } else {
             paint(g, allShapes);
         }
     }
 
-    // 重写panel的paint方法，让repaint能够调用
     public void paint(Graphics2D g, ArrayList<Shape> array) {
         super.paint(g);
-        System.out.println("重绘全部shape " + array.size());
+        //System.out.println("redraw all shapes " + array.size());
         if (array.size()>0){
             for (Shape a: array) {
                 if(a != null) {
@@ -385,7 +378,6 @@ public class WhiteboardListener extends Component
         }
     }
 
-    // 重绘单个shape
     public void paint(Shape shape) {
         shape.drawshape(g);
     }
@@ -418,17 +410,17 @@ public class WhiteboardListener extends Component
 
     public void toolBtnClicked(String text) {
         tool = text;
-        System.out.println("text = " + text);
+        //System.out.println("text = " + text);
     }
 
     public void paletteBtnClicked(Color c) {
         color = c;
-        System.out.println("palette color");
+        //System.out.println("palette color");
     }
 
     public void colourBtnClicked(String text) {
         color = getColourByStr(text);
-        System.out.println("color = " + text);
+        //System.out.println("color = " + text);
     }
 
     public void sizeBtnClicked(int Stroke, int font) {
@@ -470,12 +462,12 @@ public class WhiteboardListener extends Component
                     case "CIRCLE":
                     case "OVAL":
                     case "RECTANGLE":
-                        // 如果向右拖拽
+                        // drag to the right
                         if (x2 > x1) {
                             shape = new Shape(tool,color,x1, y1, x2, y2, null, stroke, fontSize);
                             server.addShape(shape);
                         } else {
-                            // 如果向左拖拽
+                            // drag to the left
                             shape = new Shape(tool,color,x1, y1, x2, y2, null, stroke, fontSize);
                             server.addShape(shape);
                         }
@@ -528,7 +520,7 @@ public class WhiteboardListener extends Component
                 if (tool.equals("TEXT")) {
                     String input;
                     input = JOptionPane.showInputDialog(
-                            "Please input the text you want!");
+                            "Please input text:");
                     if (input != null) {
                         shape = new Shape(tool,color,x1, y1, x2, y2, input, stroke, fontSize);
                         server.addShape(shape);
@@ -567,7 +559,8 @@ public class WhiteboardListener extends Component
         try{
             server.sendMessage(msg, this.client.getUsername());
         } catch (RemoteException e3){
-            System.out.println("failed to send message");
+            JOptionPane.showMessageDialog(null,"Failed to send message.");
+            //System.out.println("failed to send message");
         }
     }
 
@@ -628,16 +621,6 @@ public class WhiteboardListener extends Component
         }
         return null;
     }
-
-//    public ArrayList<Shape> getAllShapes() {
-//        try {
-//            return server.getWhiteBoard();
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-//
 
     // Paint data
     private ArrayList<String> paintToolsOrder;

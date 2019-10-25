@@ -31,8 +31,4 @@ public interface ServerRemoteInterface extends Remote {
 
     ArrayList<String> getAllMessages() throws RemoteException;
 
-//    String getManagerName() throws RemoteException;
-//    Set<String> getUserList() throws RemoteException;
-
-
 }

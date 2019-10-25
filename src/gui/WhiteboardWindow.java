@@ -67,18 +67,11 @@ public class WhiteboardWindow extends JFrame{
         frame.pack();
         frame.setVisible(true);
         synchronized (canvasPanel) {
+            // update canvas
             wl.setCanvas(canvasPanel);
             wl.updateCanvasFromServer();
             wl.updateCanvasFromServer();
         }
-        // update canvas
-//        Thread queryThread = new Thread() {
-//            public void run() {
-////                wl.setCanvas(canvasPanel);
-//                wl.updateCanvasFromServer();
-//            }
-//        };
-//        queryThread.start();
         setGuiToConnected();
     }
 
@@ -107,13 +100,13 @@ public class WhiteboardWindow extends JFrame{
                 int answer;
                 if (wl.getIsManager()) {
                     answer = JOptionPane.showConfirmDialog(frame,
-                            "Are you sure you want to close this window? All users will be kicked out of the room.",
+                            "Close this window? \nAll users in the room will disconnect.",
                             "Close Window?",
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE);
                 } else {
                     answer = JOptionPane.showConfirmDialog(frame,
-                            "Are you sure you want to close this window? Your work will not be saved unless it is saved by other collaborators.",
+                            "Close this window? \nYour work will not be saved unless it is saved by other collaborators.",
                             "Close Window?",
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE);
@@ -126,10 +119,9 @@ public class WhiteboardWindow extends JFrame{
             }
             @Override
             public void windowDeiconified(WindowEvent e) {
-                System.out.println("Window minimised");
+                //System.out.println("Window minimised");
                 Thread queryThread = new Thread() {
                     public void run() {
-                        //wl.setCanvas(canvasPanel);
                         //System.out.println("connected");
                         wl.updateCanvasFromServer();
                     }
@@ -201,7 +193,7 @@ public class WhiteboardWindow extends JFrame{
                     if (!status) {
                         JOptionPane.showMessageDialog(null,"Disconnection failed.");
                     } else {
-                        JOptionPane.showConfirmDialog(null,"You have successfully disconnected from the room.","",JOptionPane.DEFAULT_OPTION);
+                        JOptionPane.showConfirmDialog(null,"Successfully disconnected.","",JOptionPane.DEFAULT_OPTION);
                         setGuiToDisconnected();
                     }
                 }
@@ -543,7 +535,7 @@ public class WhiteboardWindow extends JFrame{
     }
 
     public void setGuiToConnected() {
-        System.out.println("reconnecting......");
+        //System.out.println("reconnecting......");
         if (wl.getIsManager()) { // connected manager
             mntmNew.setEnabled(true);
             mntmOpen.setEnabled(true);
@@ -652,7 +644,7 @@ public class WhiteboardWindow extends JFrame{
     }
 
     public void displayOnlineUsers(String managerName, ArrayList<String> userlist) {
-        System.out.println(wl.getUsername() + " GUI display online users");
+        //System.out.println(wl.getUsername() + " GUI display online users");
         JPanel panel = new JPanel();
         panel.setLayout(new GridBagLayout());
 

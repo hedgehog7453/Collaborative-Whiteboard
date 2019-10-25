@@ -43,8 +43,7 @@ public class Whiteboard {
             wl.setWindow(wbw);
             client.setWhiteboardListener(wl);
         } catch (RemoteException | NotBoundException | MalformedURLException e){
-            JOptionPane.showMessageDialog(null,"The whiteboard room has not been created");
-            //  System.out.println("RMI connection failed.");
+            JOptionPane.showMessageDialog(null,"No whiteboard room found.");
             System.exit(0);
         }
 
@@ -54,13 +53,6 @@ public class Whiteboard {
             try {
                 // show gui window
                 wbw.showWindow();
-//                // update canvas
-//                Thread queryThread = new Thread() {
-//                    public void run() {
-//                        wl.updateCanvasFromServer();
-//                    }
-//                };
-//                queryThread.start();
             } catch (Exception e) {
                 e.printStackTrace();
             }

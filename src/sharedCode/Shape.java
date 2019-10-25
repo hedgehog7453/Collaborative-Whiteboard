@@ -27,7 +27,7 @@ public class Shape implements Serializable {
     public void drawshape(Graphics2D g){
         g.setColor(color);
         g.setStroke(new BasicStroke(this.stroke));
-        g.setFont(new Font("Arial", Font.PLAIN, this.fontsize));//设置字体大小
+        g.setFont(new Font("Arial", Font.PLAIN, this.fontsize));
         switch(name){
             case "BRUSH":
                 g.drawLine(x1, y1, x2, y2);
@@ -35,41 +35,36 @@ public class Shape implements Serializable {
             case "LINE":
                 g.drawLine(x1, y1, x2, y2);
                 break;
+            case "ERASER":
+                g.drawLine(x1, y1, x2, y2);
+                break;
             case "CIRCLE":
                 int radius = Math.abs(x2-x1);
-                // 如果向右下方拖拽
-                // 如果向右上方拖拽
                 if (x2 > x1) {
-                    if (y2 > y1) {
+                    if (y2 > y1) { // drag to bottom right
                         g.drawOval(x1, y1, radius, radius);
-                    } else {
+                    } else { // drag to top right
                         g.drawOval(x1, y2, radius, radius);
                     }
                 } else {
-                    // 如果向左上方拖拽
-                    // 如果向左下方拖拽
-                    if (y1 > y2){
+                    if (y1 > y2){ // drag to top left
                         g.drawOval(x2, y2, radius, radius);
-                    } else {
+                    } else { // drag to bottom left
                         g.drawOval(x2, y1, radius, radius);
                     }
                 }
                 break;
             case "RECTANGLE":
-                // 如果向右下方拖拽
-                // 如果向右上方拖拽
                 if (x2 > x1) {
-                    if (y2 > y1) {
+                    if (y2 > y1) { // drag to bottom right
                         g.drawRect(x1, y1, x2 - x1, y2 - y1);
-                    } else {
+                    } else { // drag to top right
                         g.drawRect(x1, y2, x2 - x1, y1 - y2);
                     }
                 } else {
-                    // 如果向左上方拖拽
-                    // 如果向左下方拖拽
-                    if (y1 > y2){
+                    if (y1 > y2){ // drag to top left
                         g.drawRect(x2, y2, x1 - x2, y1 - y2);
-                    } else {
+                    } else { // drag to button left
                         g.drawRect(x2, y1, x1 - x2, y2 - y1);
                     }
                 }
@@ -77,27 +72,19 @@ public class Shape implements Serializable {
             case "OVAL":
                 int width = Math.abs(x2-x1);
                 int height = Math.abs(y2-y1);
-
-                // 如果向右下方拖拽
-                // 如果向右上方拖拽
                 if (x2 > x1) {
-                    if (y2 > y1) {
+                    if (y2 > y1) { // drag to bottom right
                         g.drawOval(x1, y1, width, height);
-                    } else {
+                    } else { // drag to top right
                         g.drawOval(x1, y2, width, height);
                     }
                 } else {
-                    // 如果向左上方拖拽
-                    // 如果向左下方拖拽
-                    if (y1 > y2){
+                    if (y1 > y2){ // drag to top left
                         g.drawOval(x2, y2, width, height);
-                    } else {
+                    } else { // drag to bottom left
                         g.drawOval(x2, y1, width, height);
                     }
                 }
-                break;
-            case "ERASER":
-                g.drawLine(x1, y1, x2, y2);
                 break;
             case "TEXT":
                 g.drawString(this.input, x1,y1);
