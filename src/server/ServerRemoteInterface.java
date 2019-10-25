@@ -30,7 +30,6 @@ public interface ServerRemoteInterface extends Remote {
     void broadcastMessage(String msg) throws RemoteException;
 
     ArrayList<String> getAllMessages() throws RemoteException;
-    ArrayList<Shape> getAllShapes() throws RemoteException;
 
 //    String getManagerName() throws RemoteException;
 //    Set<String> getUserList() throws RemoteException;

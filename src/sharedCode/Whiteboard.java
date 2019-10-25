@@ -9,6 +9,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.ArrayList;
 
 public class Whiteboard {
 
@@ -53,13 +54,13 @@ public class Whiteboard {
             try {
                 // show gui window
                 wbw.showWindow();
-                // update canvas
-                Thread queryThread = new Thread() {
-                    public void run() {
-                        wl.getboardfromServer(200);
-                    }
-                };
-                queryThread.start();
+//                // update canvas
+//                Thread queryThread = new Thread() {
+//                    public void run() {
+//                        wl.updateCanvasFromServer();
+//                    }
+//                };
+//                queryThread.start();
             } catch (Exception e) {
                 e.printStackTrace();
             }

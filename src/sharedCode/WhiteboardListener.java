@@ -160,18 +160,18 @@ public class WhiteboardListener extends Component
         switch (cmd) {
             case "New":
                 try {
-                    if (server.getAllShapes().size() != 0) { // if nothing has been drawn
+                    if (server.getWhiteBoard().size() != 0) { // if nothing has been drawn
                         boolean save = promptSave();
                         if (save) {
                             boolean saveSuccess = saveFile(path); // TODO: if save is canceled, abort current operation
                             if (saveSuccess) {
                                 server.clearAllShapes();
-                                server.updateClientCanvas();
+                                //server.updateClientCanvas();
                                 server.broadcastMessage("Manager cleared the canvas. ");
                             }
                         } else {
                             server.clearAllShapes();
-                            server.updateClientCanvas();
+                            //server.updateClientCanvas();
                             server.broadcastMessage("Manager cleared the canvas. ");
                         }
                     }
@@ -182,7 +182,7 @@ public class WhiteboardListener extends Component
                 break;
             case "Open":
                 try {
-                    if (server.getAllShapes().size() == 0){ // if nothing has been drawn
+                    if (server.getWhiteBoard().size() == 0){ // if nothing has been drawn
                         openFile();
                     } else {
                         boolean save = promptSave();
@@ -258,7 +258,7 @@ public class WhiteboardListener extends Component
                 ois.close();
                 server.updateShapes(shapes);
                 // re-paint canvas
-                server.updateClientCanvas();
+                //server.updateClientCanvas();
                 server.broadcastMessage("Manager opened the file \"" + file.getName() + "\". ");
             }
         } catch (Exception e1) {
@@ -285,7 +285,7 @@ public class WhiteboardListener extends Component
                     ObjectOutputStream oos = new ObjectOutputStream(fis);
                     // re-paint shapearray to canvas
                     oos.writeObject(server.getWhiteBoard());
-                    JOptionPane.showMessageDialog(null, "Success！");
+                    JOptionPane.showMessageDialog(null, "Successfully saved. ");
                     oos.close();
                     this.path = fileName.getPath();
                 } catch (Exception e){
@@ -299,7 +299,7 @@ public class WhiteboardListener extends Component
                 ObjectOutputStream oos = new ObjectOutputStream(fis);
                 // re-paint shapearray to canvas
                 oos.writeObject(server.getWhiteBoard());
-                JOptionPane.showMessageDialog(null, "Success！");
+                JOptionPane.showMessageDialog(null, "Successfully saved. ");
                 oos.close();
             } catch (Exception e){
                 JOptionPane.showMessageDialog(null, "Failed to save file. ");
@@ -311,7 +311,18 @@ public class WhiteboardListener extends Component
 
     // ============================ draw ==============================
 
-    public void getboardfromServer(int millis){
+    // Called by client remote
+    public void updateCanvas(int millis, ArrayList<Shape> shapes){
+//        EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                try {
+//                    canvas.repaint();
+//                    drawAllShapes(shapes);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
         try{
             Thread thread = new MyThread();
             Thread.currentThread().sleep(millis);//毫秒
@@ -322,14 +333,29 @@ public class WhiteboardListener extends Component
         }
     }
 
+    // called by local classes
+    public void updateCanvasFromServer() {
+        synchronized (canvas) {
+            try {
+                System.out.println("retrieve canvas from server and show");
+                updateCanvas(100, server.getWhiteBoard());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     class MyThread extends Thread{
         @Override
         public void run() {
-            try {
-                canvas.repaint();
-                drawAllShapes(server.getWhiteBoard());
-            } catch (RemoteException ex) {
-                System.out.println("failed to repaint graph given by server");
+            synchronized (canvas) {
+                try {
+                    System.out.println("showing canvas");
+                    canvas.repaint();
+                    drawAllShapes(server.getWhiteBoard());
+                } catch (RemoteException ex) {
+                    System.out.println("failed to repaint graph given by server");
+                }
             }
         }
     }
@@ -603,15 +629,15 @@ public class WhiteboardListener extends Component
         return null;
     }
 
-    public ArrayList<Shape> getAllShapes() {
-        try {
-            return server.getAllShapes();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
+//    public ArrayList<Shape> getAllShapes() {
+//        try {
+//            return server.getWhiteBoard();
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+//
 
     // Paint data
     private ArrayList<String> paintToolsOrder;

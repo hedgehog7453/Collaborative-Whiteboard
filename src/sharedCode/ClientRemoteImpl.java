@@ -50,10 +50,10 @@ public class ClientRemoteImpl extends UnicastRemoteObject implements ClientRemot
     }
 
     @Override
-    public void updateCanvas() {
+    public void updateCanvas(ArrayList<Shape> shapes) {
         Thread queryThread = new Thread() {
             public void run() {
-                wbl.getboardfromServer(100);
+                wbl.updateCanvas(100, shapes);
             }
         };
         queryThread.start();

@@ -41,6 +41,7 @@ public class WhiteboardWindow extends JFrame{
     private ArrayList<JToggleButton> colours;
     private JButton sizeBtn;
     private JButton paletteBtn;
+    private JButton refreshBtn;
 
     // Canvas
     private JPanel canvasPanel;
@@ -65,7 +66,19 @@ public class WhiteboardWindow extends JFrame{
     public void showWindow() {
         frame.pack();
         frame.setVisible(true);
-        wl.setCanvas(canvasPanel);
+        synchronized (canvasPanel) {
+            wl.setCanvas(canvasPanel);
+            wl.updateCanvasFromServer();
+            wl.updateCanvasFromServer();
+        }
+        // update canvas
+//        Thread queryThread = new Thread() {
+//            public void run() {
+////                wl.setCanvas(canvasPanel);
+//                wl.updateCanvasFromServer();
+//            }
+//        };
+//        queryThread.start();
         setGuiToConnected();
     }
 
@@ -116,9 +129,9 @@ public class WhiteboardWindow extends JFrame{
                 System.out.println("Window minimised");
                 Thread queryThread = new Thread() {
                     public void run() {
-                        wl.setCanvas(canvasPanel);
+                        //wl.setCanvas(canvasPanel);
                         //System.out.println("connected");
-                        wl.getboardfromServer(100);
+                        wl.updateCanvasFromServer();
                     }
                 };
                 queryThread.start();
@@ -163,10 +176,12 @@ public class WhiteboardWindow extends JFrame{
                         boolean status = wl.connectToServer(false);
                         if (status) {
                             setGuiToConnected();
-                            wl.setCanvas(canvasPanel);
-                            if (wl.getReconnect()){
-                                //System.out.println("connected");
-                                wl.getboardfromServer(100);
+                            synchronized (canvasPanel) {
+                                wl.setCanvas(canvasPanel);
+                                if (wl.getReconnect()) {
+                                    //System.out.println("connected");
+                                    wl.updateCanvasFromServer();
+                                }
                             }
                         }
                     }
@@ -415,6 +430,32 @@ public class WhiteboardWindow extends JFrame{
             gbc.insets = new Insets(0, 0, 6, 0);
         }
         toolPanel.add(paletteBtn, gbc);
+        col++;
+        if (col % TOOL_GRID_WIDTH == 0) row++;
+
+        // ----------------- Refresh ---------------------
+        refreshBtn = new JButton();
+        refreshBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                wl.updateCanvasFromServer();
+            }
+        });
+        refreshBtn.setPreferredSize(new Dimension(TOOL_TOGGLE_DIMENSION, TOOL_TOGGLE_DIMENSION));
+        try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(getClass().getResource("/assets/refresh.png")));
+            refreshBtn.setIcon(icon);
+        } catch (Exception e) {
+            refreshBtn.setText("Refr");
+        }
+        GridBagConstraints gbc_r = new GridBagConstraints();
+        gbc_r.gridx = col % TOOL_GRID_WIDTH;
+        gbc_r.gridy = row + TOOL_BLOCK_2_OFFSET + 1;
+        if (col % TOOL_GRID_WIDTH == 0) {
+            gbc_r.insets = new Insets(0, 0, 6, 6);
+        } else {
+            gbc_r.insets = new Insets(0, 0, 6, 0);
+        }
+        toolPanel.add(refreshBtn, gbc_r);
     }
 
     private void initialiseCanvas() {
@@ -529,6 +570,7 @@ public class WhiteboardWindow extends JFrame{
         }
         sizeBtn.setEnabled(true);
         paletteBtn.setEnabled(true);
+        refreshBtn.setEnabled(true);
         // enable canvas
         canvasPanel.setEnabled(true);
         // enable chat
@@ -566,6 +608,7 @@ public class WhiteboardWindow extends JFrame{
         }
         sizeBtn.setEnabled(false);
         paletteBtn.setEnabled(false);
+        refreshBtn.setEnabled(false);
         // disable canvas
         canvasPanel.setEnabled(false);
         // disable chat

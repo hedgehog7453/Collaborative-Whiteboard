@@ -64,7 +64,6 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
             manager = client;
             managerName = username;
             client.setUsername(username);
-            //updateAllUserlists();
             broadcastMessage(username + " just joined the room as manager.");
             return true;
         } else {
@@ -76,8 +75,6 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
                 updateAllUserlists();
                 broadcastMessage(username + " just joined the room.");
                 client.displayAllMessages();
-//                client.drawAllShapes();
-//              这个时候graphic2d还没初始化 画不了
                 return true;
             }
             return false;
@@ -146,49 +143,51 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     // Draw
     @Override
     public ArrayList<Shape> getWhiteBoard() throws RemoteException {
-        //synchronized (shapeArrayList) {
+        synchronized (shapeArrayList) {
             //System.out.println("getting whiteboard " + shapeArrayList.size());
             return shapeArrayList;
-        //}
+        }
     }
 
     @Override
     public void addShape(Shape shape) throws RemoteException {
         // System.out.println("add shape");
-        //synchronized (shapeArrayList) {
+        synchronized (shapeArrayList) {
             shapeArrayList.add(shape);
             manager.drawNewShape(shape);
             for (ClientRemoteInterface client : users.values()) {
                 client.drawNewShape(shape);
             }
-        //}
+        }
     }
 
     @Override
     public void clearAllShapes() throws RemoteException {
-        //synchronized (shapeArrayList) {
+        synchronized (shapeArrayList) {
             //System.out.println("remove all shapes");
             shapeArrayList = new ArrayList<Shape>();
-        //}
+            updateClientCanvas();
+        }
     }
 
     @Override
     public void updateShapes(ArrayList<Shape> shapes) throws RemoteException {
-        //synchronized (shapeArrayList) {
+        synchronized (shapeArrayList) {
             this.shapeArrayList = new ArrayList<Shape>(shapes);
-        //}
+            updateClientCanvas();
+        }
     }
 
     @Override
     public void updateClientCanvas() throws RemoteException {
-        //synchronized (shapeArrayList) {
-            manager.updateCanvas();
+        synchronized (shapeArrayList) {
+            manager.updateCanvas(shapeArrayList);
             if (!users.isEmpty()) {
                 for (ClientRemoteInterface user : users.values()) {
-                    user.updateCanvas();
+                    user.updateCanvas(shapeArrayList);
                 }
             }
-        //}
+        }
     }
 
     @Override
@@ -252,11 +251,6 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     @Override
     public ArrayList<String> getAllMessages() throws RemoteException {
         return messages;
-    }
-
-    @Override
-    public ArrayList<Shape> getAllShapes() throws RemoteException {
-        return shapeArrayList;
     }
 
 }
