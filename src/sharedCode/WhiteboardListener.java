@@ -97,6 +97,7 @@ public class WhiteboardListener extends Component
             } else {
                 JOptionPane.showConfirmDialog(null, "You are rejected by the manager.",
                         "Oh no :(", JOptionPane.DEFAULT_OPTION);
+                System.exit(0);
             }
         } catch (Exception e) {
             e.printStackTrace();
