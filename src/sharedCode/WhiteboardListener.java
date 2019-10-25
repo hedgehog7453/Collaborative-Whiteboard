@@ -21,18 +21,27 @@ public class WhiteboardListener extends Component
     private final ClientRemoteInterface client;
     private ServerRemoteInterface server;
 
+    // Canvas to draw on
     private JPanel canvas;
     private Graphics2D g;
+
+    // default paint tools
     private String tool = "BRUSH";
     private Color color = Color.BLACK;
-    private int x1, y1, x2, y2;
     private int stroke = 1;
     private int fontSize = 12;
+
+    private int x1, y1, x2, y2;
     private Shape shape;
+
+    // save path
     private String path = "";
+
+    // status
     private boolean isDisconnect = false;
     private boolean reconnect = false;
 
+    // GUI window
     private WhiteboardWindow window;
 
 
@@ -151,10 +160,10 @@ public class WhiteboardListener extends Component
         switch (cmd) {
             case "New":
                 try {
-                    if (server.getAllShapes().size() != 0) { // if nothing is drawn
+                    if (server.getAllShapes().size() != 0) { // if nothing has been drawn
                         boolean save = promptSave();
                         if (save) {
-                            saveFile(path);
+                            saveFile(path); // TODO: if save is canceled, abort current operation
                         }
                         server.clearAllShapes();
                         server.updateClientCanvas();
@@ -167,7 +176,7 @@ public class WhiteboardListener extends Component
                 break;
             case "Open":
                 try {
-                    if (server.getAllShapes().size() == 0){ // if nothing is drawn
+                    if (server.getAllShapes().size() == 0){ // if nothing has been drawn
                         openFile();
                     } else {
                         boolean save = promptSave();
@@ -200,13 +209,13 @@ public class WhiteboardListener extends Component
                 System.exit(0);
                 break;
             default:
-                System.out.println(cmd + " clicked");
+                //System.out.println(cmd + " clicked");
         }
     }
 
     private boolean promptSave() {
         int value = JOptionPane.showConfirmDialog(null,
-                "Save the current drawing?", "Save? ", 0);
+                "Save current drawing?", "Save? ", 0);
         if (value == JOptionPane.YES_OPTION) {
             return true;
         }
@@ -214,6 +223,7 @@ public class WhiteboardListener extends Component
     }
 
     public void openFile() throws IOException {
+        // TODO: return false if save is canceled
         try {
             // alert user to choose file
             JFileChooser chooser = new JFileChooser();
@@ -223,22 +233,21 @@ public class WhiteboardListener extends Component
             }
             File file = chooser.getSelectedFile();
             if (file == null) {
-                JOptionPane.showMessageDialog(null, "Please select a file.");
                 path = "";
+                JOptionPane.showMessageDialog(null, "Please select a file.");
             }
             else {
+                path = file.getPath();
                 // create output stream
                 FileInputStream fis = new FileInputStream(file);
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 // cast to shape type
-                //ArrayList<Shape> list = (ArrayList<Shape>)ois.readObject();
-                server.updateShapes((ArrayList<Shape>)ois.readObject());
+                ArrayList<Shape> shapes = (ArrayList<Shape>)ois.readObject();
+                ois.close();
+                server.updateShapes(shapes);
                 // re-paint canvas
-                //paint(g, list);
                 server.updateClientCanvas();
                 server.broadcastMessage("Manager opened the file \"" + file.getName() + "\". ");
-                ois.close();
-                path = file.getPath();
             }
         } catch (Exception e1) {
             e1.printStackTrace();
@@ -291,7 +300,6 @@ public class WhiteboardListener extends Component
             Thread.currentThread().sleep(millis);//毫秒
             thread.start();
             Thread.currentThread().sleep(20);//毫秒
-
         } catch (InterruptedException e){
             System.out.println("failed to get board from server");
         }

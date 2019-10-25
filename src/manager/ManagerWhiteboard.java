@@ -5,16 +5,17 @@ import sharedCode.Whiteboard;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
 public class ManagerWhiteboard {
 
-    public static void main(String[] args) throws RemoteException, NotBoundException, MalformedURLException {
-        // RMI
-        String port = args[1];
-        String ip = "localhost";
+    public static void main(String[] args) {
+
+        String ip = args[0]; // IP Address
+        String port = args[1]; // port number
+
+        // setup RMI server
         ServerRemoteImpl server;
         try {
             server = new ServerRemoteImpl();
@@ -26,9 +27,10 @@ public class ManagerWhiteboard {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+
         // Initialise app
         Whiteboard wb = new Whiteboard();
-        wb.initialiseApp(true,ip,port, null);
+        wb.initialiseApp(true, ip, port, null);
     }
 
 }

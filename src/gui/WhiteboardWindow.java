@@ -23,7 +23,6 @@ public class WhiteboardWindow extends JFrame{
     public final int MESSAGE_HEIGHT = 601;
     public final int INPUT_HEIGHT = 100;
     public final int NUM_OF_TOOLS = 7;
-    public final int MAX_DRAW_STATUS_CHAR = 120;
 
     // Main frame
     private JFrame frame;
@@ -54,7 +53,7 @@ public class WhiteboardWindow extends JFrame{
     private JButton btnPost;
     private JScrollPane viewUsersScrollPane;
 
-    //
+    // listener
     private WhiteboardListener wl;
 
 
@@ -70,6 +69,7 @@ public class WhiteboardWindow extends JFrame{
         setGuiToConnected();
     }
 
+    // Initialise all gui components
     private void initialiseWindow() {
         initialiseMainFrame();
         initialiseMenu();
@@ -114,13 +114,11 @@ public class WhiteboardWindow extends JFrame{
             @Override
             public void windowDeiconified(WindowEvent e) {
                 System.out.println("Window minimised");
-//                wl.getboardfromServer(100);
                 Thread queryThread = new Thread() {
                     public void run() {
-                            wl.setCanvas(canvasPanel);
-                            System.out.println("connected");
-                            wl.getboardfromServer(100);
-
+                        wl.setCanvas(canvasPanel);
+                        //System.out.println("connected");
+                        wl.getboardfromServer(100);
                     }
                 };
                 queryThread.start();
@@ -131,21 +129,17 @@ public class WhiteboardWindow extends JFrame{
     private void initialiseMenu() {
         JMenuBar menuBar = new JMenuBar();
         frame.setJMenuBar(menuBar);
-
         // -------------- File ----------------
         JMenu mnFile = new JMenu("File");
         menuBar.add(mnFile);
-
         // Create new canvas
         mntmNew = new JMenuItem("New");
         mntmNew.addActionListener(wl);
         mnFile.add(mntmNew);
-
         // Open local image
         mntmOpen = new JMenuItem("Open");
         mntmOpen.addActionListener(wl);
         mnFile.add(mntmOpen);
-
         // Save current canvas
         mntmSave = new JMenuItem("Save");
         mntmSave.addActionListener(wl);
@@ -153,16 +147,13 @@ public class WhiteboardWindow extends JFrame{
         mntmSaveAs = new JMenuItem("Save as");
         mntmSaveAs.addActionListener(wl);
         mnFile.add(mntmSaveAs);
-
         // Close the application
         mntmClose = new JMenuItem("Close");
         mntmClose.addActionListener(wl);
         mnFile.add(mntmClose);
-
         // -------------- Connection ----------------
         JMenu mnConnection = new JMenu("Connection");
         menuBar.add(mnConnection);
-
         // Connect to the server
         mntmConnect = new JMenuItem("Connect");
         mntmConnect.addActionListener(new ActionListener() {
@@ -174,7 +165,7 @@ public class WhiteboardWindow extends JFrame{
                             setGuiToConnected();
                             wl.setCanvas(canvasPanel);
                             if (wl.getReconnect()){
-                                System.out.println("connected");
+                                //System.out.println("connected");
                                 wl.getboardfromServer(100);
                             }
                         }
@@ -184,7 +175,6 @@ public class WhiteboardWindow extends JFrame{
             }
         });
         mnConnection.add(mntmConnect);
-
         // Disconnect to the server
         mntmDisconnect = new JMenuItem("Disconnect");
         mntmDisconnect.addActionListener(new ActionListener() {
@@ -203,7 +193,6 @@ public class WhiteboardWindow extends JFrame{
             }
         });
         mnConnection.add(mntmDisconnect);
-
         // -------------- Team information ----------------
         JMenu mnAbout = new JMenu("About");
         menuBar.add(mnAbout);
@@ -324,12 +313,9 @@ public class WhiteboardWindow extends JFrame{
         GridBagConstraints gbc1 = new GridBagConstraints();
         gbc1.gridx = col % TOOL_GRID_WIDTH;
         gbc1.gridy = row + TOOL_BLOCK_1_OFFSET;
-        if (col % TOOL_GRID_WIDTH == 0)
-        {
+        if (col % TOOL_GRID_WIDTH == 0) {
             gbc1.insets = new Insets(0, 0, 6, 6);
-        }
-        else
-        {
+        } else {
             gbc1.insets = new Insets(0, 0, 6, 0);
         }
         toolPanel.add(sizeBtn, gbc1);
@@ -377,12 +363,9 @@ public class WhiteboardWindow extends JFrame{
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.gridx = col % TOOL_GRID_WIDTH;
             gbc.gridy = row + TOOL_BLOCK_2_OFFSET + 1;
-            if (col % TOOL_GRID_WIDTH == 0)
-            {
+            if (col % TOOL_GRID_WIDTH == 0) {
                 gbc.insets = new Insets(0, 0, 6, 6);
-            }
-            else
-            {
+            } else {
                 gbc.insets = new Insets(0, 0, 6, 0);
             }
             toolPanel.add(tb, gbc);
@@ -426,12 +409,9 @@ public class WhiteboardWindow extends JFrame{
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = col % TOOL_GRID_WIDTH;
         gbc.gridy = row + TOOL_BLOCK_2_OFFSET + 1;
-        if (col % TOOL_GRID_WIDTH == 0)
-        {
+        if (col % TOOL_GRID_WIDTH == 0) {
             gbc.insets = new Insets(0, 0, 6, 6);
-        }
-        else
-        {
+        } else {
             gbc.insets = new Insets(0, 0, 6, 0);
         }
         toolPanel.add(paletteBtn, gbc);
@@ -509,7 +489,6 @@ public class WhiteboardWindow extends JFrame{
         gbc_btnPost.gridx = 1;
         gbc_btnPost.gridy = 1;
         chatPanel.add(btnPost, gbc_btnPost);
-//        dl.setChatPanel(taInputMessage, tpUsersMessages);
         communicationTabbedPane.addTab("Chat", chatPanel);
 
         // View users tab
@@ -519,7 +498,6 @@ public class WhiteboardWindow extends JFrame{
         viewUsersScrollPane.setMaximumSize(new Dimension(CHAT_WIDTH, MAIN_PANEL_HEIGHT));
         communicationTabbedPane.addTab("Online users", viewUsersScrollPane);
         viewUsersScrollPane.getViewport().setName("tab");
-//        viewUsersScrollPane.getViewport().addChangeListener(dl);
         frame.getContentPane().add(communicationTabbedPane);
     }
 

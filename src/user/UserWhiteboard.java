@@ -2,21 +2,17 @@ package user;
 
 import sharedCode.Whiteboard;
 
-import java.net.MalformedURLException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-
 public class UserWhiteboard {
 
-    public static void main(String[] args) throws RemoteException, NotBoundException, MalformedURLException {
-        // Initialise app
-        String ip = args[0];
-        String port = args[1];
-        String port2 = args[2];
+    public static void main(String[] args) {
 
+        String ip = args[0]; // IP address
+        String port = args[1]; // port number
+        String port2 = args[2]; // another port number if there is a user connecting from the same machine as manager
         System.out.println(ip + " " + port);
 
+        // Initialise app
         Whiteboard wb = new Whiteboard();
-        wb.initialiseApp(false,ip,port, port2);
+        wb.initialiseApp(false, ip, port, port2);
     }
 }

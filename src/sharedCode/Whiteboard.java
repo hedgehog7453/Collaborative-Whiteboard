@@ -21,7 +21,7 @@ public class Whiteboard {
     private WhiteboardListener wl;
 
     public void initialiseApp(boolean isManager, String ip, String port, String user_port) {
-        // RMI
+
         try {
             // find server
             server = (ServerRemoteInterface) Naming.lookup("rmi://"+ip+":"+port+"/server");
@@ -35,32 +35,31 @@ public class Whiteboard {
                 LocateRegistry.createRegistry(Integer.parseInt(user_port));
                 Naming.rebind("rmi://"+ip+":"+user_port+"/client", client);
             }
+
             client.setIsManager(isManager);
             wl = new WhiteboardListener(server, client);
             wbw = new WhiteboardWindow(wl);
             wl.setWindow(wbw);
             client.setWhiteboardListener(wl);
         } catch (RemoteException | NotBoundException | MalformedURLException e){
-            //TODO
             JOptionPane.showMessageDialog(null,"The whiteboard room has not been created");
-            e.printStackTrace();
-            System.out.println("RMI connection failed.");
+            //  System.out.println("RMI connection failed.");
             System.exit(0);
         }
 
+        // Connect to server
         boolean isConnected = wl.connectToServer(true);
         if (isConnected) {
-            // GUI
             try {
+                // show gui window
                 wbw.showWindow();
+                // update canvas
                 Thread queryThread = new Thread() {
                     public void run() {
                         wl.getboardfromServer(200);
                     }
                 };
                 queryThread.start();
-//                client.drawAllShapes();
-//                wl.drawAllShapes(server.getWhiteBoard());
             } catch (Exception e) {
                 e.printStackTrace();
             }
