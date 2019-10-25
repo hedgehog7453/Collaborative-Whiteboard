@@ -21,20 +21,20 @@ public class Whiteboard {
     private WhiteboardWindow wbw;
     private WhiteboardListener wl;
 
-    public void initialiseApp(boolean isManager, String ip, String port, String user_port) {
+    public void initialiseApp(boolean isManager, String ip, String port) {
 
         try {
             // find server
-            server = (ServerRemoteInterface) Naming.lookup("rmi://"+ip+":"+port+"/server");
+            server = (ServerRemoteInterface) Naming.lookup("rmi://" + ip + ":" + port + "/server");
 
             // Client
             client = new ClientRemoteImpl();
             if (isManager) {
-                Naming.rebind("rmi://"+ip+":"+port+"/client", client);
+                Naming.rebind("rmi://localhost:" + port + "/client", client);
             } else {
                 // Allows only one user on manager's machine to join
-                LocateRegistry.createRegistry(Integer.parseInt(user_port));
-                Naming.rebind("rmi://"+ip+":"+user_port+"/client", client);
+                LocateRegistry.createRegistry(Integer.parseInt(port));
+                Naming.rebind("rmi://localhost:" + port + "/client", client);
             }
 
             client.setIsManager(isManager);
@@ -42,8 +42,14 @@ public class Whiteboard {
             wbw = new WhiteboardWindow(wl);
             wl.setWindow(wbw);
             client.setWhiteboardListener(wl);
-        } catch (RemoteException | NotBoundException | MalformedURLException e){
-            JOptionPane.showMessageDialog(null,"No whiteboard room found.");
+        } catch (RemoteException e){
+            JOptionPane.showMessageDialog(null,"No whiteboard room found (RemoteException).");
+            System.exit(0);
+        } catch (NotBoundException e) {
+            JOptionPane.showMessageDialog(null,"No whiteboard room found (NotBoundException).");
+            System.exit(0);
+        } catch (MalformedURLException e) {
+            JOptionPane.showMessageDialog(null,"No whiteboard room found (MalformedURLException).");
             System.exit(0);
         }
 

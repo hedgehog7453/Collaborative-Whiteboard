@@ -610,6 +610,7 @@ public class WhiteboardWindow extends JFrame{
     }
 
     public void setDrawStatusText(ArrayList<String> usernames) {
+        //System.out.println(usernames.size());
         if (usernames.size() == 0) {
             drawStatusLabel.setText(" ");
             return;
@@ -623,13 +624,13 @@ public class WhiteboardWindow extends JFrame{
         for (int i=0; i<usernames.size(); i++) {
             if (i == 0) {
                 text += usernames.get(i);
-            }
-            if (i == usernames.size() - 1) {
+            } else if (i == usernames.size() - 1) {
                 text += " and " + usernames.get(i);
             } else {
                 text += ", " + usernames.get(i);
             }
         }
+        drawStatusLabel.setText(text + suffix);
     }
 
     public void appendTextToMessages(String newText) {

@@ -20,7 +20,7 @@ public class ManagerWhiteboard {
         try {
             server = new ServerRemoteImpl();
             LocateRegistry.createRegistry(Integer.parseInt(port));
-            Naming.rebind("rmi://localhost:"+port+"/server", server);
+            Naming.rebind("rmi://localhost:" + port + "/server", server);
             //System.out.println("Object bound to name");
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -30,7 +30,7 @@ public class ManagerWhiteboard {
 
         // Initialise app
         Whiteboard wb = new Whiteboard();
-        wb.initialiseApp(true, ip, port, null);
+        wb.initialiseApp(true, ip, port);
     }
 
 }
