@@ -163,11 +163,17 @@ public class WhiteboardListener extends Component
                     if (server.getAllShapes().size() != 0) { // if nothing has been drawn
                         boolean save = promptSave();
                         if (save) {
-                            saveFile(path); // TODO: if save is canceled, abort current operation
+                            boolean saveSuccess = saveFile(path); // TODO: if save is canceled, abort current operation
+                            if (saveSuccess) {
+                                server.clearAllShapes();
+                                server.updateClientCanvas();
+                                server.broadcastMessage("Manager cleared the canvas. ");
+                            }
+                        } else {
+                            server.clearAllShapes();
+                            server.updateClientCanvas();
+                            server.broadcastMessage("Manager cleared the canvas. ");
                         }
-                        server.clearAllShapes();
-                        server.updateClientCanvas();
-                        server.broadcastMessage("Manager cleared the canvas. ");
                     }
                     path = "";
                 } catch (IOException ex) {
@@ -181,9 +187,13 @@ public class WhiteboardListener extends Component
                     } else {
                         boolean save = promptSave();
                         if (save) {
-                            saveFile(path);
+                            boolean saveSuccess = saveFile(path);
+                            if (saveSuccess) {
+                                openFile();
+                            }
+                        } else {
+                            openFile();
                         }
-                        openFile();
                     }
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -204,9 +214,11 @@ public class WhiteboardListener extends Component
                 }
                 break;
             case "Close":
-                confirmDisconnection();
-                disconnectFromServer();
-                System.exit(0);
+                boolean confirm = confirmDisconnection();
+                if (confirm) {
+                    disconnectFromServer();
+                    System.exit(0);
+                }
                 break;
             default:
                 //System.out.println(cmd + " clicked");
@@ -254,18 +266,19 @@ public class WhiteboardListener extends Component
         }
     }
 
-    public void saveFile(String path) throws IOException {
+    public boolean saveFile(String path) throws IOException {
         if (path.equals("")){
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             int result = fileChooser.showSaveDialog(this);
             if (result == JFileChooser.CANCEL_OPTION) {
-                return;
+                return false;
             }
             File fileName = fileChooser.getSelectedFile();
             if (fileName.getName().equals("")) {
                 JOptionPane.showMessageDialog(fileChooser, "Invalid File Name",
                         "Invalid File Name", JOptionPane.ERROR_MESSAGE);
+                return false;
             } else {
                 try {
                     FileOutputStream fis = new FileOutputStream(fileName);
@@ -276,6 +289,8 @@ public class WhiteboardListener extends Component
                     oos.close();
                     this.path = fileName.getPath();
                 } catch (Exception e){
+                    JOptionPane.showMessageDialog(null, "Failed to save file. ");
+                    return false;
                 }
             }
         } else {
@@ -287,9 +302,11 @@ public class WhiteboardListener extends Component
                 JOptionPane.showMessageDialog(null, "Success！");
                 oos.close();
             } catch (Exception e){
+                JOptionPane.showMessageDialog(null, "Failed to save file. ");
+                return false;
             }
         }
-
+        return true;
     }
 
     // ============================ draw ==============================

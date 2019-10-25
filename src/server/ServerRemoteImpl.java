@@ -146,39 +146,49 @@ public class ServerRemoteImpl extends UnicastRemoteObject implements ServerRemot
     // Draw
     @Override
     public ArrayList<Shape> getWhiteBoard() throws RemoteException {
-        System.out.println("getting whiteboard " + shapeArrayList.size());
-        return shapeArrayList;
+        //synchronized (shapeArrayList) {
+            //System.out.println("getting whiteboard " + shapeArrayList.size());
+            return shapeArrayList;
+        //}
     }
 
     @Override
     public void addShape(Shape shape) throws RemoteException {
         // System.out.println("add shape");
-        shapeArrayList.add(shape);
-        manager.drawNewShape(shape);
-        for (ClientRemoteInterface client : users.values()) {
-            client.drawNewShape(shape);
-        }
+        //synchronized (shapeArrayList) {
+            shapeArrayList.add(shape);
+            manager.drawNewShape(shape);
+            for (ClientRemoteInterface client : users.values()) {
+                client.drawNewShape(shape);
+            }
+        //}
     }
 
     @Override
     public void clearAllShapes() throws RemoteException {
-        System.out.println("remove all shapes");
-        shapeArrayList = new ArrayList<Shape>();
+        //synchronized (shapeArrayList) {
+            //System.out.println("remove all shapes");
+            shapeArrayList = new ArrayList<Shape>();
+        //}
     }
 
     @Override
     public void updateShapes(ArrayList<Shape> shapes) throws RemoteException {
-        this.shapeArrayList = new ArrayList<Shape>(shapes);
+        //synchronized (shapeArrayList) {
+            this.shapeArrayList = new ArrayList<Shape>(shapes);
+        //}
     }
 
     @Override
     public void updateClientCanvas() throws RemoteException {
-        manager.updateCanvas();
-        if (!users.isEmpty()) {
-            for (ClientRemoteInterface user : users.values()) {
-                user.updateCanvas();
+        //synchronized (shapeArrayList) {
+            manager.updateCanvas();
+            if (!users.isEmpty()) {
+                for (ClientRemoteInterface user : users.values()) {
+                    user.updateCanvas();
+                }
             }
-        }
+        //}
     }
 
     @Override
