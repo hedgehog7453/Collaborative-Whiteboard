@@ -31,10 +31,12 @@ public class Whiteboard {
             client = new ClientRemoteImpl();
             if (isManager) {
                 Naming.rebind("rmi://localhost:" + port + "/client", client);
+                //Naming.rebind("rmi://localhost:8188/client", client);
             } else {
                 // Allows only one user on manager's machine to join
-                LocateRegistry.createRegistry(Integer.parseInt(port));
-                Naming.rebind("rmi://localhost:" + port + "/client", client);
+                //LocateRegistry.createRegistry(Integer.parseInt(port));
+            	LocateRegistry.createRegistry(8187);
+                Naming.rebind("rmi://localhost:8187/client", client);
             }
 
             client.setIsManager(isManager);

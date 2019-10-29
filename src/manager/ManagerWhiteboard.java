@@ -16,6 +16,7 @@ public class ManagerWhiteboard {
         String port = args[1]; // port number
 
         // setup RMI server
+        System.setProperty("java.rmi.server.hostname", ip);
         ServerRemoteImpl server;
         try {
             server = new ServerRemoteImpl();

@@ -65,8 +65,13 @@ public class WhiteboardListener extends Component
             String username = "";
             while (!isUnique) {
                 JFrame frame = new JFrame("Connection");
-                username = JOptionPane.showInputDialog(frame, "Please enter your username: ",
-                        opTitle, JOptionPane.QUESTION_MESSAGE);
+                if (isManager) {
+                	username = JOptionPane.showInputDialog(frame, "Please enter your username: ",
+                            opTitle, JOptionPane.QUESTION_MESSAGE);
+                } else {
+                	username = JOptionPane.showInputDialog(frame, "Please enter your username: \n(After clicking \"Yes\", your username will be sent to the manager. \nPlease wait for the manager's approval.)",
+                            opTitle, JOptionPane.QUESTION_MESSAGE);
+                }
                 if (username == null) {
                     if (firstConnection) {
                         System.exit(0);
@@ -88,8 +93,8 @@ public class WhiteboardListener extends Component
             }
             boolean status = server.clientConnect(isManager, username, client);
             if (status) {
-                JOptionPane.showConfirmDialog(null, "You are now in the room!",
-                        "Congratulations", JOptionPane.DEFAULT_OPTION);
+//                JOptionPane.showConfirmDialog(null, "You are now in the room!",
+//                        "Congratulations", JOptionPane.DEFAULT_OPTION);
                 if (!firstConnection){
                     this.isDisconnect = false;
                     this.reconnect = true;
